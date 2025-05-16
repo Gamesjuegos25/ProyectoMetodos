@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ nombre_metodo|capitalize }}</title>
+</head>
+<body>
+    <h1>Método {{ nombre_metodo|capitalize }}</h1>
+
+    {% if error %}
+        <p style="color:red;">{{ error }}</p>
+    {% endif %}
+
+    <form method="POST">
+        {% for campo in campos %}
+            <label for="{{ campo }}">{{ campo|capitalize }}:</label><br>
+            {% if campo == 'funcion' %}
+                <textarea name="{{ campo }}" id="{{ campo }}" rows="3" cols="40" required>{{ request.form.get(campo, '') }}</textarea>
+            {% else %}
+                <input type="text" name="{{ campo }}" id="{{ campo }}" required value="{{ request.form.get(campo, '') }}">
+            {% endif %}
+            <br><br>
+        {% endfor %}
+        <button type="submit" name="accion" value="calcular">Calcular</button>
+        {% if resultado %}
+            <button type="submit" name="accion" value="guardar">Guardar</button>
+        {% endif %}
+    </form>
+
+    {% if resultado %}
+        <h2>Resultado:</h2>
+        <p>Raíz: {{ resultado[0] }}</p>
+        <p>Iteraciones: {{ resultado[1] }}</p>
+    {% endif %}
+
+    <a href="{{ url_for('menu') }}">Volver al menú</a>
+</body>
+</html>

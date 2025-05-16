@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>Menú Principal</title>
+</head>
+<body>
+    <h1>Seleccione un método</h1>
+
+    <a href="{{ url_for('metodo_newton') }}">
+        <button>Newton-Raphson</button>
+    </a>
+
+    <a href="{{ url_for('metodo_secante') }}">
+        <button>Secante</button>
+    </a>
+
+    <a href="{{ url_for('metodo_muller') }}">
+        <button>Müller</button>
+    </a>
+
+</body>
+</html>
