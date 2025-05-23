@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body class="login-body">
+
+    <!-- Sprite -->
+    <div id="sprite" class="sprite idle"></div>
+
+    <div class="login-wrapper">
+        <div class="login-container">
+            <h2 class="login-title">Bienvenido</h2>
+            <p class="login-subtitle">Inicia sesión para continuar</p>
+            <form method="POST" class="login-form">
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" name="username" placeholder="Usuario" class="login-input" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" name="password" placeholder="Contraseña" class="login-input" required>
+                </div>
+                <button type="submit" class="login-button">Entrar</button>
+            </form>
+            <a href="{{ url_for('registrar') }}" class="register-link">¿No tienes cuenta? Regístrate</a>
+            {% if error %}<p class="login-error">{{ error }}</p>{% endif %}
+        </div>
+    </div>
+
+<script>
+    const sprite = document.getElementById('sprite');
+    let isDragging = false;
+    let offsetX = 0, offsetY = 0;
+    let walkInterval = null;
+    let currentDirection = 1;
+    let isWalking = false;
+
+    //sprite.style.left = sprite.style.left || '50px';
+    //sprite.style.top = sprite.style.top || '200px';
+
+    // Drag
+    sprite.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        offsetX = e.clientX - sprite.offsetLeft;
+        offsetY = e.clientY - sprite.offsetTop;
+        sprite.style.cursor = 'grabbing';
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            sprite.style.left = `${e.clientX - offsetX}px`;
+            sprite.style.top = `${e.clientY - offsetY}px`;
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+        sprite.style.cursor = 'grab';
+    });
+
+    // Teclado
+    document.addEventListener('keydown', (e) => {
+        if (isDragging) return;
+
+        const key = e.key;
+        const left = parseInt(sprite.style.left) || 0;
+
+        if ((key === 'ArrowRight' || key === 'ArrowLeft') && !sprite.classList.contains('walking')) {
+            clearInterval(walkInterval);
+            sprite.className = 'sprite walking';
+            currentDirection = key === 'ArrowRight' ? 1 : -1;
+            sprite.style.transform = `scaleX(${currentDirection})`;
+            isWalking = true;
+
+            walkInterval = setInterval(() => {
+                const currentLeft = parseInt(sprite.style.left) || 0;
+                sprite.style.left = `${currentLeft + 5 * currentDirection}px`;
+            }, 30);
+        }
+
+        if (key === 'ArrowUp') {
+            if (sprite.classList.contains('jumping') || sprite.classList.contains('attacking')) return;
+
+            sprite.className = 'sprite jumping';
+            sprite.style.transform = `scaleX(${currentDirection})`;
+
+            const jumpDistance = 60;
+            const newLeft = currentDirection === 1 ? left + jumpDistance : left - jumpDistance;
+
+            sprite.style.transition = 'left 0.9s ease-out';
+            sprite.style.left = `${newLeft}px`;
+
+            setTimeout(() => {
+                sprite.style.transition = '';
+                if (isWalking) {
+                    sprite.className = 'sprite walking';
+                    sprite.style.transform = `scaleX(${currentDirection})`;
+                } else {
+                    sprite.className = 'sprite idle';
+                    sprite.style.transform = `scaleX(${currentDirection})`;
+                }
+            }, 900);
+        }
+
+        if (key === 'ArrowDown') {
+            if (sprite.classList.contains('attacking') || sprite.classList.contains('jumping')) return;
+
+            sprite.className = 'sprite attacking';
+            sprite.style.transform = `scaleX(${currentDirection})`;
+        }
+    });
+
+    document.addEventListener('keyup', (e) => {
+        const key = e.key;
+        if (key === 'ArrowRight' || key === 'ArrowLeft') {
+            clearInterval(walkInterval);
+            isWalking = false;
+            sprite.className = 'sprite idle';
+            sprite.style.transform = `scaleX(${currentDirection})`;
+        }
+    });
+
+    // Reiniciar estado tras animaciones (ataque o salto)
+    sprite.addEventListener('animationend', () => {
+        if (sprite.classList.contains('attacking') || sprite.classList.contains('jumping')) {
+            if (isWalking) {
+                sprite.className = 'sprite walking';
+            } else {
+                sprite.className = 'sprite idle';
+            }
+            sprite.style.transform = `scaleX(${currentDirection})`;
+        }
+    });
+</script>
+
+</body>
+</html>

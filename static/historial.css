@@ -1,0 +1,163 @@
+/* Fondo y tipografía general */
+body.historial-body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: 
+        linear-gradient(to right, #4b007d88, #f27a1a88),
+        url('/static/img/background.jpeg') no-repeat center center fixed;
+    background-size: cover;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    color: #32004b;
+}
+
+/* Navbar (igual que en home.css) */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: rgba(255, 255, 255, 0.85);
+    padding: 10px 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-logo {
+    font-size: 24px;
+}
+
+.navbar-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #4b007d;
+}
+
+.navbar-menu {
+    list-style: none;
+    display: flex;
+    gap: 15px;
+    padding: 0;
+    margin: 0;
+}
+
+.navbar-menu li a {
+    text-decoration: none;
+    color: white;
+    background-color: #4b007d;
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.navbar-menu li a:hover {
+    background-color: #f27a1a;
+}
+
+/* Contenedor principal */
+.historial-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 20px;
+}
+
+/* Filtros */
+.historial-filtros {
+    background-color: rgba(255, 255, 255, 0.85);
+    padding: 20px 25px;
+    border-radius: 15px;
+    margin-bottom: 25px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.historial-filtros label {
+    font-weight: bold;
+    color: #4b007d;
+}
+
+.historial-filtros select,
+.historial-filtros input[type="date"] {
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.historial-filtros button {
+    background-color: #4b007d;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.historial-filtros button:hover {
+    background-color: #f27a1a;
+}
+
+/* Resultados */
+.historial-lista {
+    width: 100%;
+    max-width: 1000px;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.25);
+    overflow-x: auto;
+}
+
+.historial-lista table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+    color: #32004b;
+}
+
+.historial-lista th,
+.historial-lista td {
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    text-align: center;
+}
+
+.historial-lista th {
+    background-color: #4b007d;
+    color: white;
+}
+
+.historial-lista tr:nth-child(even) {
+    background-color: #f3f3f3;
+}
+
+/* Sin resultados */
+.sin-resultados {
+    text-align: center;
+    font-size: 16px;
+    color: #4b007d;
+    font-weight: bold;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .historial-filtros {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .historial-lista {
+        padding: 20px;
+    }
+
+    .historial-lista table {
+        font-size: 14px;
+    }
+}

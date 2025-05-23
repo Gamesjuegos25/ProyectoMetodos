@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ nombre_metodo|capitalize }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='metodo.css') }}">
+</head>
+<body class="metodo-body">
+
+    <div class="metodo-container">
+        <h1>Método {{ nombre_metodo|capitalize }}</h1>
+
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+
+        <form method="POST">
+            {% for campo in campos %}
+                <label for="{{ campo }}">{{ campo|capitalize }}:</label><br>
+                {% if campo == 'funcion' %}
+                    <textarea name="{{ campo }}" id="{{ campo }}" rows="3" cols="40" required>{{ request.form.get(campo, '') }}</textarea>
+                {% else %}
+                    <input type="text" name="{{ campo }}" id="{{ campo }}" required value="{{ request.form.get(campo, '') }}">
+                {% endif %}
+                <br><br>
+            {% endfor %}
+
+            <div class="btn-group">
+                <button type="submit" class="btn" name="accion" value="calcular">
+                    <span></span><span></span><span></span><span></span>
+                    Calcular
+                </button>
+            </div>
+        </form>
+
+        {% if resultado and resultado[1] and resultado[1]|length > 0 %}
+            <div class="raiz-final">
+                Raíz encontrada: {{ resultado[0] }}
+            </div>
+
+            <div class="tabla-resumen">
+                <table>
+                    <thead>
+                        <tr>
+                            {% for clave in resultado[1][0].keys() %}
+                                <th>{{ "Error (%)" if clave == "Error" else clave }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set iteraciones = resultado[1][:5] %}
+                        {% for fila in iteraciones %}
+                        <tr>
+                            {% for clave, valor in fila.items() %}
+                                {% if clave == "Error" %}
+                                    <td>{{ (valor * 100) | round(6) }}%</td>
+                                {% else %}
+                                    <td>{{ valor }}</td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <p class="nota-tabla">* El error relativo se muestra para cada iteración.</p>
+            </div>
+
+            {% if imagen %}
+                <h3>Gráfica de la función:</h3>
+                <img src="data:image/png;base64,{{ imagen }}" alt="Gráfica de la función" style="max-width:600px;">
+            {% endif %}
+
+            <!-- Formulario para guardar -->
+            <form method="post">
+                {% for campo in campos %}
+                    <input type="hidden" name="{{ campo }}" value="{{ request.form.get(campo, '') }}">
+                {% endfor %}
+                <input type="hidden" name="metodo" value="{{ nombre_metodo }}">
+                <input type="hidden" name="resultado_guardar" value="{{ resultado[0] }}">
+                <input type="hidden" name="datos_guardar" value='{{ resultado[1]|tojson|safe }}'>
+                <button type="submit" name="accion" value="guardar" class="btn-guardar">Guardar</button>
+            </form>
+        {% endif %}
+
+        <div class="btn-group">
+            <a href="{{ url_for('home') }}">
+                <button type="button" class="btn volver">
+                    <span></span><span></span><span></span><span></span>
+                    Volver al menú
+                </button>
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Autores</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='autores.css') }}">
+</head>
+<body class="home-body">
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-logo">Proyecto Métodos</div>
+        <button class="hamburger" onclick="document.querySelector('.navbar-menu').classList.toggle('show')">☰</button>
+        <ul class="navbar-menu">
+            <li><a href="{{ url_for('home') }}">Inicio</a></li>
+            <li><a href="{{ url_for('autores') }}">Autores</a></li>
+            <li><a href="{{ url_for('logout') }}">Cerrar sesión</a></li>
+        </ul>
+    </nav>
+
+    <!-- Contenido principal -->
+    <main class="home-main">
+        <div class="home-welcome">
+            <h2>Autores del Proyecto</h2>
+
+            <div class="autor">
+                <img src="{{ url_for('static', filename='img/autor1.jpg') }}" alt="Foto del autor">
+                <h3>Juan Pérez</h3>
+                <p><strong>Carnet:</strong> 20220001</p>
+                <p><strong>Aporte:</strong> Desarrollo del backend, lógica de métodos numéricos y conexión con la base de datos.</p>
+            </div>
+
+            <div class="autor">
+                <img src="{{ url_for('static', filename='img/autor2.jpg') }}" alt="Foto del autor">
+                <h3>María García</h3>
+                <p><strong>Carnet:</strong> 20220002</p>
+                <p><strong>Aporte:</strong> Diseño del frontend, integración visual, experiencia de usuario y estilo responsive.</p>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>
