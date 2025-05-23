@@ -5,6 +5,8 @@ from src.conexion_sqlS import conexiondb
 from Metodos.MetodosLogica import newton_raphsonLogica, secanteLogica, mullerLogica
 from src.GuardarEnDBMetodos import guardar_resultado_newton, guardar_resultado_secante, guardar_resultado_muller
 from src.HistorialLogica import obtener_historial_usuario
+from werkzeug.security import generate_password_hash, check_password_hash
+
 
 app = Flask(__name__)
 app.secret_key = 'tu_clave_secreta_aqui'
@@ -21,15 +23,15 @@ def login():
         if connection:
             try:
                 cursor = connection.cursor()
-                cursor.execute("SELECT * FROM Usuarios WHERE NombreUsuario = ? AND Contrasena = ?", (username, password))
-                user = cursor.fetchone()
+                cursor.execute("SELECT Contrasena FROM Usuarios WHERE NombreUsuario = ?", (username,))
+                row = cursor.fetchone()
             except Exception as e:
                 error = f'Error en la consulta: {e}'
-                user = None
+                row = None
             finally:
                 connection.close()
 
-            if user:
+            if row and check_password_hash(row[0], password):
                 session['username'] = username
                 return redirect(url_for('home'))
             elif not error:
@@ -59,7 +61,8 @@ def registrar():
                     if existing_user:
                         error = 'El usuario ya existe.'
                     else:
-                        cursor.execute("INSERT INTO Usuarios (NombreUsuario, Contrasena) VALUES (?, ?)", (username, password))
+                        hashed_password = generate_password_hash(password)
+                        cursor.execute("INSERT INTO Usuarios (NombreUsuario, Contrasena) VALUES (?, ?)", (username, hashed_password))
                         connection.commit()
                         return redirect(url_for('login'))
                 except Exception as e:
