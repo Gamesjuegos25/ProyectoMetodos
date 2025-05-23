@@ -62,5 +62,5 @@ Significa que necesitas instalar los paquetes del proyecto con:
 
 ---
 
-Estas librerías son las que usa actualmente la versión, puede variar:
+
 
