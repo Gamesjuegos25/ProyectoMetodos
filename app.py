@@ -5,6 +5,7 @@ from src.conexion_sqlS import conexiondb
 from Metodos.MetodosLogica import newton_raphsonLogica, secanteLogica, mullerLogica
 from src.GuardarEnDBMetodos import guardar_resultado_newton, guardar_resultado_secante, guardar_resultado_muller
 from src.HistorialLogica import obtener_historial_usuario
+#se agrego la linea de abajo para poder configurar la password y que esta sea en codigo y no sea plana 
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
@@ -30,7 +31,10 @@ def login():
                 row = None
             finally:
                 connection.close()
-
+                # Antes:
+                # if row and password == row[0]:
+                ##se hizo el cambio para que las clave de seguridad se guarde en la db
+                ##pero tipo codigo
             if row and check_password_hash(row[0], password):
                 session['username'] = username
                 return redirect(url_for('home'))
