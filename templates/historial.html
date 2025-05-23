@@ -54,7 +54,7 @@
                                 <td>
                                     {% if item.tiene_grafica %}
                                         <button type="button" style="cursor:pointer;" class="btn-ver-grafica"
-                                            data-url="{{ url_for('ver_grafica', metodo=item.metodo, id=item.ResultadoId) }}">
+                                            data-url="{{ url_for('ver_grafica', metodo=item.metodo, id=item['ResultadoId']) }}">
                                             Ver gráfica
                                         </button>
                                     {% else %}

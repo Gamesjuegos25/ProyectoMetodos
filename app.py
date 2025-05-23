@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, s
 from io import BytesIO
 from src.conexion_sqlS import conexiondb
 from Metodos.MetodosLogica import newton_raphsonLogica, secanteLogica, mullerLogica
-from src.GuardarEnDBMetodos import guardar_resultado_newton, guardar_resultado_secante, guardar_resultado_muller
+from src.GuardarEnDBMetodos import guardar_resultado_metodo
 from src.HistorialLogica import obtener_historial_usuario
 #se agrego la linea de abajo para poder configurar la password y que esta sea en codigo y no sea plana 
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -144,11 +144,11 @@ def metodo_generico(nombre_metodo, campos=None):
 
                 # Guardar resultados según el método
                 if nombre_metodo == 'Newton':
-                    exito = guardar_resultado_newton(usuario, funcion, valores[0], datos_json, resultado_guardar, error_relativo)
+                    exito = guardar_resultado_metodo(nombre_metodo, usuario, funcion, valores[0], datos_json, resultado_guardar, error_relativo)
                 elif nombre_metodo == 'Secante':
-                    exito = guardar_resultado_secante(usuario, funcion, valores[0], valores[1], datos_json, resultado_guardar, error_relativo)
+                    exito = guardar_resultado_metodo(nombre_metodo, usuario, funcion, valores[0], datos_json, resultado_guardar, error_relativo, x1=valores[1])
                 elif nombre_metodo == 'Müller':
-                    exito = guardar_resultado_muller(usuario, funcion, valores[0], valores[1], valores[2], datos_json, resultado_guardar, error_relativo)
+                    exito = guardar_resultado_metodo(nombre_metodo, usuario, funcion, valores[0], datos_json, resultado_guardar, error_relativo, x1=valores[1], x2=valores[2])
 
                 if exito:
                     return redirect(url_for('home'))
@@ -200,24 +200,15 @@ def historial():
     return render_template('historial.html', username=username, resultados=resultados, metodo=metodo, fecha=fecha)
 
 # VER GRÁFICA
-@app.route('/ver_grafica/<metodo>/<int:id>')
-def ver_grafica(metodo, id):
+
+
+@app.route('/ver_grafica/<int:id>')
+def ver_grafica(id):
     conn = conexiondb()
     cursor = conn.cursor()
-
-    tabla = None
-    metodo_lower = metodo.lower()
-    if metodo_lower == 'newton':
-        tabla = 'ResultadosNewton'
-    elif metodo_lower == 'muller':
-        tabla = 'ResultadosMuller'
-    elif metodo_lower == 'secante':
-        tabla = 'ResultadosSecante'
-    else:
-        return "Método no válido", 400
-
+    
     try:
-        cursor.execute(f"SELECT Grafica FROM {tabla} WHERE ResultadoId = ?", (id,))
+        cursor.execute("SELECT Grafica FROM ResultadosMetodos WHERE ResultadoId = ?", (id,))
         row = cursor.fetchone()
     except Exception as e:
         conn.close()
@@ -226,10 +217,11 @@ def ver_grafica(metodo, id):
     conn.close()
 
     if row and row[0]:
-        grafica_bytes = row[0]  # Esto es un objeto tipo bytes
+        grafica_bytes = row[0]  # bytes
         return send_file(BytesIO(grafica_bytes), mimetype='image/png')
     else:
         return "Gráfica no encontrada", 404
+
     
 if __name__ == '__main__':
     app.run(debug=True)

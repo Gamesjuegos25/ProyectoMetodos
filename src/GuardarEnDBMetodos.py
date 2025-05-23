@@ -5,79 +5,32 @@ import io
 import matplotlib.pyplot as plt
 import sympy as sp
 import numpy as np
+import pyodbc
 
-def guardar_resultado_newton(usuario, funcion, x0, lista_iteraciones, resultado, error_relativo, grafica_bytes=None):
+
+def guardar_resultado_metodo(metodo,usuario, funcion, x0, lista_iteraciones, resultado, error_relativo, grafica_bytes=None,x1=None,x2=None):
+
     try:
         iteraciones = len(lista_iteraciones)
-        grafica_bytes = crear_grafica(funcion, resultado)
-
-        if error_relativo is None:
-            error_relativo_str = "0.0"
-        else:
-            error_relativo_str = f"{float(error_relativo):.15f}"
+        if grafica_bytes is None:
+            
+            grafica_bytes = crear_grafica(funcion, resultado)
+            
+        error_relativo_str = f"{float(error_relativo):.15f}"
 
         connection = conexiondb()
         cursor = connection.cursor()
         cursor.execute(
-            "INSERT INTO ResultadosNewton (NombreUsuario, Funcion, X0, Iteraciones, Resultado, ErrorRelativo, Grafica) VALUES (?, ?, ?, ?, ?, ?, ?)",
-            (usuario, funcion, x0, iteraciones, resultado, error_relativo_str, grafica_bytes)
+            "INSERT INTO ResultadosMetodos (Metodo,NombreUsuario, Funcion, X0,X1,X2, Iteraciones, Resultado, ErrorRelativo, Grafica) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (metodo,usuario, funcion, x0,x1,x2, iteraciones, resultado, error_relativo_str, pyodbc.Binary(grafica_bytes))
         )
+
 
         connection.commit()
         connection.close()
         return True
     except Exception as e:
         print(f"[Newton] Error inesperado al guardar: {e}")
-        print(traceback.format_exc())
-        return False
-
-
-def guardar_resultado_secante(usuario, funcion, x0, x1, lista_iteraciones, resultado, error_relativo, grafica_bytes=None):
-    try:
-        iteraciones = len(lista_iteraciones)
-        grafica_bytes = crear_grafica(funcion, resultado)
-
-        if error_relativo is None:
-            error_relativo_str = "0.0"
-        else:
-            error_relativo_str = f"{float(error_relativo):.15f}"
-
-        connection = conexiondb()
-        cursor = connection.cursor()
-        cursor.execute(
-            "INSERT INTO ResultadosSecante (NombreUsuario, Funcion, X0, X1, Iteraciones, Resultado, ErrorRelativo, Grafica) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-            (usuario, funcion, x0, x1, iteraciones, resultado, error_relativo_str, grafica_bytes)
-        )
-        connection.commit()
-        connection.close()
-        return True
-    except Exception as e:
-        print(f"[Secante] Error inesperado al guardar: {e}")
-        print(traceback.format_exc())
-        return False
-
-
-def guardar_resultado_muller(usuario, funcion, x0, x1, x2, lista_iteraciones, resultado, error_relativo, grafica_bytes=None):
-    try:
-        iteraciones = len(lista_iteraciones)
-        grafica_bytes = crear_grafica(funcion, resultado)
-
-        if error_relativo is None:
-            error_relativo_str = "0.0"
-        else:
-            error_relativo_str = f"{float(error_relativo):.15f}"
-
-        connection = conexiondb()
-        cursor = connection.cursor()
-        cursor.execute(
-            "INSERT INTO ResultadosMuller (NombreUsuario, Funcion, X0, X1, X2, Iteraciones, Resultado, ErrorRelativo, Grafica) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            (usuario, funcion, x0, x1, x2, iteraciones, resultado, error_relativo_str, grafica_bytes)
-        )
-        connection.commit()
-        connection.close()
-        return True
-    except Exception as e:
-        print(f"[Müller] Error inesperado al guardar: {e}")
         print(traceback.format_exc())
         return False
 
