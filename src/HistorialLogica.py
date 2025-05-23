@@ -1,4 +1,3 @@
-from src.conexion_sqlS import conexiondb
 
 from src.conexion_sqlS import conexiondb
 

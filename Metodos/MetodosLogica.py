@@ -135,3 +135,7 @@ def mullerLogica(funcion_str, x0, x1, x2, max_iter=4000, tol=1e-6):
             return None, iteraciones
 
     return None, iteraciones
+
+#en este espacio se agregara la logica del metodo de gauss
+def gaussLogica():
+    return 

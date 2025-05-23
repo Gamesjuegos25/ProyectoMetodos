@@ -1,11 +1,13 @@
-import json
+import sys
+import os
+
 from flask import Flask, render_template, request, redirect, url_for, session, send_file
 from io import BytesIO
 from src.conexion_sqlS import conexiondb
 from Metodos.MetodosLogica import newton_raphsonLogica, secanteLogica, mullerLogica
 from src.GuardarEnDBMetodos import guardar_resultado_metodo
 from src.HistorialLogica import obtener_historial_usuario
-#se agrego la linea de abajo para poder configurar la password y que esta sea en codigo y no sea plana 
+
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
@@ -31,10 +33,7 @@ def login():
                 row = None
             finally:
                 connection.close()
-                # Antes:
-                # if row and password == row[0]:
-                ##se hizo el cambio para que las clave de seguridad se guarde en la db
-                ##pero tipo codigo
+                
             if row and check_password_hash(row[0], password):
                 session['username'] = username
                 return redirect(url_for('home'))
@@ -105,6 +104,7 @@ def metodo_secante():
 def metodo_muller():
     return metodo_generico('Müller', ['funcion', 'x0', 'x1', 'x2'])
 
+# AUTOR
 @app.route('/autores')
 def autores():
     if 'username' not in session:
@@ -124,6 +124,7 @@ def metodo_generico(nombre_metodo, campos=None):
 
     if request.method == 'POST':
         if accion == 'guardar':
+            import json
             try:
                 funcion = request.form.get('funcion')
                 resultado_guardar = float(request.form.get('resultado_guardar'))
@@ -131,8 +132,7 @@ def metodo_generico(nombre_metodo, campos=None):
                 iteraciones_data = json.loads(datos_json)  
                 valores = [float(request.form.get(campo)) for campo in campos if campo.startswith('x')]
                 usuario = session['username']
-
-                # Obtener último error relativo si existe
+                
                 error_relativo = None
                 if iteraciones_data and isinstance(iteraciones_data, list):
                     ultima_iteracion = iteraciones_data[-1]
@@ -142,7 +142,7 @@ def metodo_generico(nombre_metodo, campos=None):
                     except (ValueError, TypeError):
                         error_relativo = None
 
-                # Guardar resultados según el método
+                
                 if nombre_metodo == 'Newton':
                     exito = guardar_resultado_metodo(nombre_metodo, usuario, funcion, valores[0], datos_json, resultado_guardar, error_relativo)
                 elif nombre_metodo == 'Secante':
@@ -157,7 +157,7 @@ def metodo_generico(nombre_metodo, campos=None):
             except Exception as e:
                 error = f'Error inesperado al guardar: {e}'
 
-        else:  # Acción calcular
+        else:
             for campo in datos:
                 datos[campo] = request.form.get(campo, '').strip()
 
@@ -217,11 +217,11 @@ def ver_grafica(id):
     conn.close()
 
     if row and row[0]:
-        grafica_bytes = row[0]  # bytes
+        grafica_bytes = row[0]
         return send_file(BytesIO(grafica_bytes), mimetype='image/png')
     else:
         return "Gráfica no encontrada", 404
 
-    
+
 if __name__ == '__main__':
     app.run(debug=True)
