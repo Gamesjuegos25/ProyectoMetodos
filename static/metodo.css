@@ -6,11 +6,11 @@ body.metodo-body {
         linear-gradient(to right, #4b007d88, #f27a1a88),
         url('/static/img/background.jpeg') no-repeat center center fixed;
     background-size: cover;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     color: #32004b;
+    
+    /* Permite scroll vertical si el contenido es más alto */
+    overflow-y: auto;
+    padding: 20px;
 }
 
 /* Contenedor principal */
@@ -19,8 +19,9 @@ body.metodo-body {
     padding: 40px 30px;
     border-radius: 20px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.25);
-    width: 100%;
     max-width: 600px;
+    width: 100%;
+    margin: 0 auto; /* Centrar horizontalmente */
     text-align: center;
 }
 
@@ -72,6 +73,12 @@ body.metodo-body {
     cursor: pointer;
     transition: background-color 0.3s, box-shadow 0.3s;
 }
+
+.metodo-container button:hover {
+    background-color: #f27a1a;
+    box-shadow: 0 0 10px #f27a1a;
+}
+
 /* Tabla de resumen */
 .tabla-resumen {
     margin-top: 20px;
@@ -105,6 +112,7 @@ body.metodo-body {
 .tabla-resumen tr:nth-child(even) {
     background-color: #f9f0ff;
 }
+
 /* Nota explicativa de la tabla */
 .tabla-resumen .nota-tabla {
     margin-top: 10px;
@@ -113,7 +121,6 @@ body.metodo-body {
     color: #4b007d;
     text-align: center;
 }
-
 
 /* Resaltado de la raíz encontrada */
 .raiz-final {
@@ -127,6 +134,8 @@ body.metodo-body {
     color: #32004b;
     box-shadow: 0 0 10px rgba(242, 122, 26, 0.3);
 }
+
+/* Botón guardar */
 .btn-guardar {
     background-color: #f27a1a;
     color: white;
@@ -141,13 +150,6 @@ body.metodo-body {
 
 .btn-guardar:hover {
     background-color: #e06700;
-}
-
-
-
-.metodo-container button:hover {
-    background-color: #f27a1a;
-    box-shadow: 0 0 10px #f27a1a;
 }
 
 /* Mensaje de error */
