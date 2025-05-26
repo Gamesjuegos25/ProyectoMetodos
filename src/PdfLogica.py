@@ -6,7 +6,7 @@ from PIL import Image
 import tempfile
 import os
 
-def Greporte(nombre_usuario=None, resultado_id=None, fecha=None):
+def Greporte(nombre_usuario=None, resultado_id=None, fecha=None, nombre_metodo=None):
     conn = conexiondb()
     cursor = conn.cursor()
 

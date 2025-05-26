@@ -3,6 +3,9 @@ from src.conexion_sqlS import conexiondb
 def obtener_historial_usuario(username, metodo='', fecha=''):
     resultados = []
 
+    connection = None
+    cursor = None
+
     try:
         connection = conexiondb()
         cursor = connection.cursor()
@@ -32,21 +35,24 @@ def obtener_historial_usuario(username, metodo='', fecha=''):
             grafica = row[7]
             tiene_grafica = bool(grafica) and len(grafica) > 0
 
+            fecha_str = row[8].strftime('%Y-%m-%d') if row[8] else ''
+
             resultados.append({
                 'ResultadoId': row[0],
-                'metodoId': row[1],
-                'metodo': row[2],      
-                'usuario': row[3],
+                'metodo': row[2],         # Nombre del método
                 'funcion': row[4],
                 'resultado': row[5],
                 'iteraciones': row[6],
                 'tiene_grafica': tiene_grafica,
-                'fecha': row[8],
+                'fecha': fecha_str,
             })
 
     except Exception as e:
         print(f'Error obteniendo historial: {e}')
     finally:
-        connection.close()
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
 
     return resultados

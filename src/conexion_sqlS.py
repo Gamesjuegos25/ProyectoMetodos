@@ -6,7 +6,7 @@ def conexiondb():
         connection = pyodbc.connect(
             r"DRIVER={ODBC Driver 17 for SQL Server};"
             r"SERVER=(localdb)\MSSQLLocalDB;"
-            r"DATABASE=ProyectoFMetodos2;"
+            r"DATABASE=ProyectoFMetodos;"
             r"Trusted_Connection=yes;"
         )
         print("Conexion exitosa")

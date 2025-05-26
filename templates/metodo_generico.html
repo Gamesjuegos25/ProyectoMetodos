@@ -17,11 +17,13 @@
         <form method="POST">
             {% for campo in campos %}
                 <label for="{{ campo }}">{{ campo|capitalize }}:</label><br>
-                {% if campo == 'funcion' %}
-                    <textarea name="{{ campo }}" id="{{ campo }}" rows="3" cols="40" required>{{ request.form.get(campo, '') }}</textarea>
+
+                {% if campo in ['funcion', 'matriz', 'vector'] %}
+                    <textarea name="{{ campo }}" id="{{ campo }}" rows="5" cols="50" required>{{ request.form.get(campo, '') }}</textarea>
                 {% else %}
                     <input type="text" name="{{ campo }}" id="{{ campo }}" required value="{{ request.form.get(campo, '') }}">
                 {% endif %}
+
                 <br><br>
             {% endfor %}
 
@@ -33,37 +35,49 @@
             </div>
         </form>
 
-        {% if resultado and resultado[1] and resultado[1]|length > 0 %}
-            <div class="raiz-final">
-                Raíz encontrada: {{ resultado[0] }}
-            </div>
+        {% if resultado %}
+            {% if resultado[1] is string or resultado[1] is mapping or resultado[1] is iterable %}
+                {% if resultado[0] %}
+                    <div class="raiz-final">
+                        Resultado: {{ resultado[0] }}
+                    </div>
+                {% endif %}
 
-            <div class="tabla-resumen">
-                <table>
-                    <thead>
-                        <tr>
-                            {% for clave in resultado[1][0].keys() %}
-                                <th>{{ "Error (%)" if clave == "Error" else clave }}</th>
-                            {% endfor %}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% set iteraciones = resultado[1][:5] %}
-                        {% for fila in iteraciones %}
-                        <tr>
-                            {% for clave, valor in fila.items() %}
-                                {% if clave == "Error" %}
-                                    <td>{{ (valor * 100) | round(6) }}%</td>
-                                {% else %}
-                                    <td>{{ valor }}</td>
-                                {% endif %}
-                            {% endfor %}
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                <p class="nota-tabla">* El error relativo se muestra para cada iteración.</p>
-            </div>
+                <div class="tabla-resumen">
+                    <h3>Resultados detallados:</h3>
+                    {% if resultado[1][0] is mapping %}
+                        <table>
+                            <thead>
+                                <tr>
+                                    {% for clave in resultado[1][0].keys() %}
+                                        <th>{{ "Error (%)" if clave == "Error" else clave }}</th>
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for fila in resultado[1][:5] %}
+                                <tr>
+                                    {% for clave, valor in fila.items() %}
+                                        {% if clave == "Error" %}
+                                            <td>{{ (valor * 100) | round(6) }}%</td>
+                                        {% else %}
+                                            <td>{{ valor }}</td>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <p class="nota-tabla">* El error relativo se muestra para cada iteración.</p>
+                    {% else %}
+                        <pre class="matriz">
+{% for fila in resultado[1] %}
+{{ fila }}
+{% endfor %}
+                        </pre>
+                    {% endif %}
+                </div>
+            {% endif %}
 
             {% if imagen %}
                 <h3>Gráfica de la función:</h3>

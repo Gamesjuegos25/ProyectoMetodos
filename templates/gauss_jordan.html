@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>Gauss-Jordan Solver</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='gauss.css') }}">
+    <style>
+        textarea {
+            width: 300px;
+            height: 150px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        #resultado {
+            margin-top: 15px;
+            font-weight: bold;
+            color: #4b007d;
+        }
+        p.instrucciones {
+            max-width: 600px;
+            background: #f9f0ff;
+            padding: 15px;
+            border-radius: 12px;
+            border: 2px solid #4b007d;
+            color: #32004b;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        p.instrucciones code {
+            background: #e6d1ff;
+            padding: 2px 6px;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body class="metodo-body">
+    <div class="metodo-container">
+        <h1>Solucionador Gauss-Jordan</h1>
+
+        <p class="instrucciones">
+            Ingresa la matriz aumentada de tu sistema de ecuaciones.<br>
+            Cada fila debe ir en una línea nueva.<br>
+            Separa cada número (coeficientes y término independiente) con un espacio.<br>
+            Por ejemplo, para el sistema:<br><br>
+            <code>2x + 1y - 1z = 8</code><br>
+            <code>-3x - 1y + 2z = -11</code><br>
+            <code>-2x + 1y + 2z = -3</code><br><br>
+            Debes escribir:<br>
+            <code>2 1 -1 8</code><br>
+            <code>-3 -1 2 -11</code><br>
+            <code>-2 1 2 -3</code>
+        </p>
+
+        <textarea id="matrizInput" placeholder="2 1 -1 8
+-3 -1 2 -11
+-2 1 2 -3"></textarea>
+
+        <br/>
+        <button class="btn-guardar" onclick="enviarMatriz()">Calcular solución</button>
+
+        <div id="resultado"></div>
+    </div>
+
+    <script>
+        async function enviarMatriz() {
+            const texto = document.getElementById('matrizInput').value.trim();
+            const resDiv = document.getElementById('resultado');
+            if (!texto) {
+                resDiv.textContent = "Por favor ingresa la matriz aumentada.";
+                return;
+            }
+
+            resDiv.textContent = "Procesando...";
+
+            try {
+                const response = await fetch('/resolver', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({matriz: texto})
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    resDiv.textContent = "Error: " + data.error;
+                } else {
+                    resDiv.textContent = "Solución: " + data.soluciones.join(", ");
+                }
+            } catch (err) {
+                resDiv.textContent = "Error en la conexión con el servidor.";
+            }
+        }
+    </script>
+</body>
+</html>

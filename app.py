@@ -3,17 +3,21 @@ import os
 from functools import wraps
 from flask import Flask, render_template, request, redirect, url_for, session, send_file
 from io import BytesIO
+
+# Importación de funciones y conexiones propias
+from Metodos.GaussJordan import gauss_jordan_logica, parse_matriz
 from src.conexion_sqlS import conexiondb
-from Metodos.MetodosLogica import newton_raphsonLogica, secanteLogica, mullerLogica
+from Metodos.MetodosLogica import newton_raphsonLogica, secanteLogica, mullerLogica, gauss_jordan_logica
 from src.GuardarEnDBMetodos import guardar_resultado_metodo
 from src.HistorialLogica import obtener_historial_usuario
 from werkzeug.security import generate_password_hash, check_password_hash
-from src.PdfLogica import Greporte  # Importa tu función para generar PDF
+from src.PdfLogica import Greporte  # Función para generar PDF
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'tu_clave_secreta_aqui_muy_segura')
 
-# Decorador para proteger rutas que requieren login
+
+# Decorador para proteger rutas que requieren que el usuario esté logueado
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -110,6 +114,8 @@ def calcular_metodo(nombre_metodo, funcion, valores):
         return secanteLogica(funcion, *valores)
     elif nombre_metodo == 'Müller':
         return mullerLogica(funcion, *valores)
+    elif nombre_metodo == 'gauss_jordan':
+        return gauss_jordan_logica(funcion, *valores)
     return None
 
 
@@ -131,6 +137,38 @@ def metodo_secante():
 def metodo_muller():
     return metodo_generico('Müller', ['funcion', 'x0', 'x1', 'x2'])
 
+
+# Añadir protección de login a gauss_jordan
+@app.route('/metodo/gauss_jordan', methods=['GET', 'POST'])
+@login_required
+def gauss_jordan():
+    error = None
+    resultado = None
+
+    if request.method == 'POST':
+        accion = request.form.get('accion')
+        matriz_texto = request.form.get('matriz', '')
+
+        if accion == 'calcular':
+            matriz = parse_matriz(matriz_texto)
+            if matriz is None or matriz.shape[0] == 0:
+                error = "Formato de matriz inválido. Asegúrate de ingresar números separados por espacios y filas por líneas."
+            else:
+                soluciones, mensaje = gauss_jordan_logica(matriz)
+                if mensaje:
+                    error = mensaje
+                else:
+                    resultado = soluciones.tolist()
+
+        elif accion == 'guardar':
+            # Aquí debes implementar guardar en BD si quieres
+            # Por ahora lo dejamos simulado
+            return redirect(url_for('gauss_jordan'))
+
+    return render_template('gauss_jordan.html',
+                           error=error,
+                           resultado=resultado,
+                           request=request)
 
 # Función genérica para manejar la lógica común de los métodos
 @app.route('/metodo/<nombre_metodo>', methods=['GET', 'POST'])
@@ -161,6 +199,7 @@ def metodo_generico(nombre_metodo, campos=None):
                     except (ValueError, TypeError):
                         error_relativo = None
 
+                # Guardar según método
                 if nombre_metodo == 'Newton':
                     exito = guardar_resultado_metodo(nombre_metodo, usuario, funcion, valores[0], datos_json, resultado_guardar, error_relativo)
                 elif nombre_metodo == 'Secante':
@@ -178,6 +217,7 @@ def metodo_generico(nombre_metodo, campos=None):
                 error = f'Error inesperado al guardar: {e}'
 
         else:
+            # Recoger datos del formulario
             for campo in datos:
                 datos[campo] = request.form.get(campo, '').strip()
 
@@ -202,7 +242,7 @@ def metodo_generico(nombre_metodo, campos=None):
                            datos=datos)
 
 
-# RUTA HISTORIAL (filtrar y mostrar resultados guardados)
+# RUTA HISTORIAL: muestra resultados guardados, con opción de filtrar por método y fecha
 @app.route('/historial', methods=['GET', 'POST'])
 @login_required
 def historial():
@@ -246,24 +286,30 @@ def generar_pdf():
     resultado_id = request.form.get('resultado_id')
     nombre_usuario = request.form.get('nombre_usuario')
     fecha = request.form.get('fecha')
-    print(f"[DEBUG] Parámetros recibidos: resultado_id={resultado_id}, nombre_usuario={nombre_usuario}, fecha={fecha}")
+    nombre_metodo = request.form.get('nombre_metodo')  # Parámetro nuevo para el método
+
+    print(f"[DEBUG] Parámetros recibidos: resultado_id={resultado_id}, nombre_usuario={nombre_usuario}, fecha={fecha}, metodo={nombre_metodo}")
 
     try:
         resultado_id = int(resultado_id) if resultado_id else None
-        print(f"[DEBUG] resultado_id convertido a int: {resultado_id}")
     except ValueError:
-        print("[ERROR] ID inválido")
         return "ID inválido.", 400
 
-    pdf_buffer = Greporte(resultado_id=resultado_id, nombre_usuario=nombre_usuario, fecha=fecha)
-    print(f"[DEBUG] pdf_buffer recibido: {pdf_buffer}")
+    # Validar fecha
+    from datetime import datetime
+    if fecha:
+        try:
+            fecha = datetime.strptime(fecha, "%Y-%m-%d").date()
+        except ValueError:
+            return "Fecha inválida. Formato esperado: YYYY-MM-DD", 400
+
+    pdf_buffer = Greporte(resultado_id=resultado_id, nombre_usuario=nombre_usuario, fecha=fecha, nombre_metodo=nombre_metodo)
 
     if not pdf_buffer:
-        print("[ERROR] No hay datos para generar PDF.")
         return "No hay datos para generar PDF.", 404
 
-    print("[DEBUG] Enviando archivo PDF al cliente")
     return send_file(pdf_buffer, as_attachment=True, download_name='reporte.pdf', mimetype='application/pdf')
+
 
 # PÁGINA DE AUTORES
 @app.route('/autores')

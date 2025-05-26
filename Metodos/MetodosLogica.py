@@ -164,6 +164,43 @@ def mullerLogica(funcion_str, x0, x1, x2, max_iter=4000, tol=1e-6):
     mensaje = "Advertencia: se alcanzó el máximo de iteraciones sin converger."
     return None, iteraciones, mensaje
 
-# Espacio para la lógica del método de Gauss (a completar)
-def gaussLogica():
-    return
+# Método de Gauss-Jordan
+def gauss_jordan_logica(matriz_aumentada):
+    matriz = matriz_aumentada.astype(float)
+    n = matriz.shape[0]
+
+    for i in range(n):
+        # Buscar el pivote máximo en la columna i para mejorar estabilidad numérica
+        max_row = i + np.argmax(abs(matriz[i:, i]))
+        if abs(matriz[max_row, i]) < 1e-12:
+            return None, "El sistema no tiene solución única (pivote nulo)."
+
+        if max_row != i:
+            matriz[[i, max_row]] = matriz[[max_row, i]]
+
+        matriz[i] = matriz[i] / matriz[i, i]
+
+        for j in range(n):
+            if j != i:
+                matriz[j] = matriz[j] - matriz[j, i] * matriz[i]
+
+    soluciones = matriz[:, -1]
+
+    return soluciones, None
+
+# Ejemplo de uso:
+# sistema: 
+# 2x + y - z = 8
+# -3x - y + 2z = -11
+# -2x + y + 2z = -3
+matriz = np.array([
+    [2, 1, -1, 8],
+    [-3, -1, 2, -11],
+    [-2, 1, 2, -3]
+])
+
+soluciones, mensaje = gauss_jordan_logica(matriz)
+if mensaje:
+    print("Error:", mensaje)
+else:
+    print("Soluciones:", soluciones)

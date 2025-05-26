@@ -16,6 +16,7 @@
     </nav>
 
     <main class="historial-main">
+        <!-- FORMULARIO FILTROS Y REPORTE -->
         <form method="POST" class="historial-filtros" action="{{ url_for('historial') }}">
             <label for="metodo">Método:</label>
             <select name="metodo" id="metodo">
@@ -28,10 +29,14 @@
             <label for="fecha">Fecha:</label>
             <input type="date" name="fecha" id="fecha" value="{{ fecha }}">
 
+            <!-- Botón filtrar envía al action 'historial' -->
             <button type="submit" name="filtrar" value="1" class="btn-ver-grafica">Filtrar</button>
+            
+            <!-- Botón Reporte por Fecha envía filtros a 'generar_pdf' -->
             <button type="submit" name="PrintTodo" value="1" formaction="{{ url_for('generar_pdf') }}" class="btn-ver-grafica">Reporte por Fecha</button>
         </form>
 
+        <!-- TABLA RESULTADOS FILTRADOS -->
         <section class="historial-lista">
             {% if resultados %}
             <table>
@@ -78,13 +83,13 @@
                     {% endfor %}
                 </tbody>
             </table>
-
             {% else %}
                 <p class="sin-resultados">No hay resultados para los filtros aplicados.</p>
             {% endif %}
         </section>
     </main>
 
+    <!-- MODAL PARA GRÁFICAS -->
     <div id="modalGrafica" class="modal" role="dialog" aria-modal="true">
         <div class="modal-contenido">
             <span class="cerrar" id="cerrarModal">&times;</span>
