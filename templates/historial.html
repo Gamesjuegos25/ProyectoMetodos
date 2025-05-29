@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Historial</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='historial.css') }}">
+</head>
+<body class="historial-body">
+    <nav class="navbar" aria-label="Navegación principal">
+        <div class="navbar-logo">📜</div>
+        <div class="navbar-title">Historial de {{ username }}</div>
+        <ul class="navbar-menu">
+            <li><a href="{{ url_for('home') }}">Inicio</a></li>
+            <li><a href="{{ url_for('logout') }}">Salir</a></li>
+        </ul>
+    </nav>
+
+    <main class="historial-main">
+        <!-- FORMULARIO FILTROS Y REPORTE -->
+        <form method="POST" class="historial-filtros" action="{{ url_for('historial') }}">
+            <label for="metodo">Método:</label>
+            <select name="metodo" id="metodo">
+                <option value="">Todos</option>
+                <option value="Newton" {% if metodo == 'Newton' %}selected{% endif %}>Newton</option>
+                <option value="Secante" {% if metodo == 'Secante' %}selected{% endif %}>Secante</option>
+                <option value="Müller" {% if metodo == 'Müller' %}selected{% endif %}>Müller</option>
+            </select>
+
+            <label for="fecha">Fecha:</label>
+            <input type="date" name="fecha" id="fecha" value="{{ fecha }}">
+
+            <!-- Botón filtrar envía al action 'historial' -->
+            <button type="submit" name="filtrar" value="1" class="btn-ver-grafica">Filtrar</button>
+            
+            <!-- Botón Reporte por Fecha envía filtros a 'generar_pdf' -->
+            <button type="submit" name="PrintTodo" value="1" formaction="{{ url_for('generar_pdf') }}" class="btn-ver-grafica">Reporte por Fecha</button>
+        </form>
+
+        <!-- TABLA RESULTADOS FILTRADOS -->
+        <section class="historial-lista">
+            {% if resultados %}
+            <table>
+                <thead>
+                    <tr>
+                        <th scope="col">Método</th>
+                        <th scope="col">Función</th>
+                        <th scope="col">Resultado</th>
+                        <th scope="col">Iteraciones</th>
+                        <th scope="col">Fecha</th>     
+                        <th scope="col">Gráfica</th>   
+                        <th scope="col">Reporte individual</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in resultados %}
+                    <tr>
+                        <td>{{ item.metodo }}</td>
+                        <td>{{ item.funcion }}</td>
+                        <td>{{ item.resultado }}</td>
+                        <td>{{ item.iteraciones }}</td>
+                        <td>{{ item.fecha }}</td> 
+                        <td>
+                            {% if item.tiene_grafica %}
+                            <button type="button" class="btn-ver-grafica" 
+                                    data-url="/ver_grafica/{{ item.ResultadoId }}?metodo={{ item.metodo }}" 
+                                    title="Ver gráfica">
+                                Ver gráfica
+                            </button>
+                            {% else %}
+                                No disponible
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form method="POST" action="{{ url_for('generar_pdf') }}">
+                                <input type="hidden" name="PrintIndividual" value="1">
+                                <input type="hidden" name="resultado_id" value="{{ item.ResultadoId }}">
+                                <button type="submit" class="btn-ver-grafica" title="Reporte individual">
+                                    Reporte individual
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+                <p class="sin-resultados">No hay resultados para los filtros aplicados.</p>
+            {% endif %}
+        </section>
+    </main>
+
+    <!-- MODAL PARA GRÁFICAS -->
+    <div id="modalGrafica" class="modal" role="dialog" aria-modal="true">
+        <div class="modal-contenido">
+            <span class="cerrar" id="cerrarModal">&times;</span>
+            <iframe id="iframeGrafica" style="width:100%; height:500px; border:none;"></iframe>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.btn-ver-grafica').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const url = btn.getAttribute('data-url');
+                if (url) {
+                    document.getElementById('iframeGrafica').src = url;
+                    document.getElementById('modalGrafica').style.display = 'block';
+                }
+            });
+        });
+
+        document.getElementById('cerrarModal').addEventListener('click', function () {
+            document.getElementById('modalGrafica').style.display = 'none';
+            document.getElementById('iframeGrafica').src = '';
+        });
+
+        window.addEventListener('click', function (e) {
+            const modal = document.getElementById('modalGrafica');
+            if (e.target === modal) {
+                modal.style.display = 'none';
+                document.getElementById('iframeGrafica').src = '';
+            }
+        });
+    </script>
+</body>
+</html>

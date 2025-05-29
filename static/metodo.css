@@ -1,0 +1,189 @@
+/* Fondo y tipografía */
+body.metodo-body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: 
+        linear-gradient(to right, #4b007d88, #f27a1a88),
+        url('/static/img/background.jpeg') no-repeat center center fixed;
+    background-size: cover;
+    color: #32004b;
+    *, *::before, *::after {
+    box-sizing: border-box;
+    }
+    /* Permite scroll vertical si el contenido es más alto */
+    overflow-y: auto;
+    padding: 20px;
+    
+}
+
+/* Contenedor principal */
+.metodo-container {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 40px 30px;
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.25);
+    max-width: 600px;
+    width: 100%;
+    margin: 0 auto; /* Centrar horizontalmente */
+    text-align: center;
+}
+
+/* Títulos */
+.metodo-container h1,
+.metodo-container h2 {
+    font-size: 28px;
+    color: #4b007d;
+    margin-bottom: 20px;
+}
+
+/* Etiquetas */
+.metodo-container label {
+    display: block;
+    text-align: left;
+    margin: 15px 0 5px;
+    font-weight: bold;
+    color: #4b007d;
+}
+
+/* Inputs y textareas */
+.metodo-container input[type="text"],
+.metodo-container textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 0;
+    background-color: #fff;
+    border: 2px solid #4b007d;
+    border-radius: 10px;
+    font-size: 16px;
+    color: #32004b;
+    outline: none;
+    transition: border-color 0.3s;
+    height: 40px; /* <--- Ajusta este valor si deseas más o menos alto */
+    resize: none; /* <--- Para que no se pueda redimensionar manualmente */
+    display: block;
+}
+
+
+.metodo-container input:focus,
+.metodo-container textarea:focus {
+    border-color: #f27a1a;
+}
+
+/* Botón */
+.metodo-container button {
+    margin-top: 20px;
+    padding: 12px 20px;
+    color: #fff;
+    background-color: #4b007d;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.metodo-container button:hover {
+    background-color: #f27a1a;
+    box-shadow: 0 0 10px #f27a1a;
+}
+
+/* Tabla de resumen */
+.tabla-resumen {
+    margin-top: 20px;
+    overflow-x: auto;
+}
+
+.tabla-resumen table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    border: 2px solid #4b007d;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(75, 0, 125, 0.2);
+}
+
+.tabla-resumen th, .tabla-resumen td {
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    font-size: 14px;
+    color: #32004b;
+}
+
+.tabla-resumen th {
+    background-color: #4b007d;
+    color: white;
+    font-weight: bold;
+}
+
+.tabla-resumen tr:nth-child(even) {
+    background-color: #f9f0ff;
+}
+
+/* Nota explicativa de la tabla */
+.tabla-resumen .nota-tabla {
+    margin-top: 10px;
+    font-size: 13px;
+    font-style: italic;
+    color: #4b007d;
+    text-align: center;
+}
+
+/* Resaltado de la raíz encontrada */
+.raiz-final {
+    margin-top: 25px;
+    background-color: #fff8f0;
+    border: 2px solid #f27a1a;
+    border-radius: 12px;
+    padding: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #32004b;
+    box-shadow: 0 0 10px rgba(242, 122, 26, 0.3);
+}
+
+/* Botón guardar */
+.btn-guardar {
+    background-color: #f27a1a;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-top: 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.btn-guardar:hover {
+    background-color: #e06700;
+}
+
+/* Mensaje de error */
+.error {
+    color: #ff4c4c;
+    font-size: 14px;
+    margin-top: 10px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .metodo-container {
+        width: 90%;
+        padding: 30px 20px;
+    }
+
+    .metodo-container h1,
+    .metodo-container h2 {
+        font-size: 22px;
+    }
+
+    .metodo-container button {
+        width: 100%;
+        padding: 12px 0;
+        font-size: 14px;
+    }
+}

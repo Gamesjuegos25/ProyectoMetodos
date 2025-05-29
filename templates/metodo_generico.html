@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ nombre_metodo|capitalize }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='metodo.css') }}">
+</head>
+<body class="metodo-body">
+
+    <div class="metodo-container">
+        <h1>Método {{ nombre_metodo|capitalize }}</h1>
+
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+
+        <form method="POST">
+            {% for campo in campos %}
+                <label for="{{ campo }}">{{ campo|capitalize }}:</label><br>
+
+                {% if campo in ['funcion', 'matriz', 'vector'] %}
+                    <textarea name="{{ campo }}" id="{{ campo }}" rows="5" cols="50" required>{{ request.form.get(campo, '') }}</textarea>
+                {% else %}
+                    <input type="text" name="{{ campo }}" id="{{ campo }}" required value="{{ request.form.get(campo, '') }}">
+                {% endif %}
+
+                <br><br>
+            {% endfor %}
+
+            <div class="btn-group">
+                <button type="submit" class="btn" name="accion" value="calcular">
+                    <span></span><span></span><span></span><span></span>
+                    Calcular
+                </button>
+            </div>
+        </form>
+
+        {% if resultado %}
+            <div class="resultado-general">
+                {% if resultado[0] is not none %}
+                    <div class="raiz-final">
+                        <strong>Resultado:</strong> {{ resultado[0] }}
+                    </div>
+                {% endif %}
+
+                {% set detalle = resultado[1] if resultado|length > 1 else None %}
+
+                {% if detalle %}
+                    <div class="tabla-resumen">
+                        <h3>Resultados detallados:</h3>
+
+                        {% if detalle is iterable and detalle|length > 0 and detalle[0] is mapping %}
+                            {% set keys = detalle[0].keys() | list %}
+                            <table>
+                                <thead>
+                                    <tr>
+                                        {% for key in keys %}
+                                            <th>{{ key }}</th>
+                                        {% endfor %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for fila in detalle %}
+                                        <tr>
+                                            {% for key in keys %}
+                                                <td>
+                                                    {% set val = fila[key] %}
+                                                    {% if val is number %}
+                                                        {{ "%.6g"|format(val) }}
+                                                    {% else %}
+                                                        {{ val }}
+                                                    {% endif %}
+                                                </td>
+                                            {% endfor %}
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            <p class="nota-tabla">* Datos de iteraciones detalladas.</p>
+                        {% elif detalle is iterable %}
+                            <pre class="matriz">
+                            {% for fila in detalle %}
+                            {{ fila }}
+                            {% endfor %}
+                            </pre>
+                        {% else %}
+                            <pre>{{ detalle }}</pre>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        {% if imagen %}
+            <h3>Gráfica de la función:</h3>
+            <img src="data:image/png;base64,{{ imagen }}" alt="Gráfica de la función" style="max-width:600px;">
+        {% endif %}
+
+        {% if resultado %}
+            <!-- Formulario para guardar -->
+            <form method="post">
+                {% for campo in campos %}
+                    <input type="hidden" name="{{ campo }}" value="{{ request.form.get(campo, '') }}">
+                {% endfor %}
+                <input type="hidden" name="metodo" value="{{ nombre_metodo }}">
+                <input type="hidden" name="resultado_guardar" value="{{ resultado[0] }}">
+                <input type="hidden" name="datos_guardar" value='{{ resultado[1] | tojson | safe if resultado|length > 1 else "" }}'>
+                <button type="submit" name="accion" value="guardar" class="btn-guardar">Guardar</button>
+            </form>
+        {% endif %}
+
+        <div class="btn-group">
+            <a href="{{ url_for('home') }}">
+                <button type="button" class="btn volver">
+                    <span></span><span></span><span></span><span></span>
+                    Volver al menú
+                </button>
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>

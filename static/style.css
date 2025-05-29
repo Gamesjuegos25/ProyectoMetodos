@@ -1,0 +1,209 @@
+/* Reset y fuente base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Fondo y centrado total */
+body.login-body {
+    background: 
+        linear-gradient(to right, #4b007d88, #f27a1a88),
+        url('/static/img/background.jpeg') no-repeat center center fixed;
+    background-size: cover;
+    height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    color: #32004b;
+}
+
+/* Contenedor principal */
+.login-wrapper {
+    background-color: rgba(255, 255, 255, 0.85);
+    padding: 40px 30px;
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.25);
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Encabezado */
+.login-title {
+    font-size: 28px;
+    color: #4b007d;
+    margin-bottom: 10px;
+}
+
+.login-subtitle {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 25px;
+}
+
+/* Input con ícono */
+.input-group {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.input-group i {
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    transform: translateY(-50%);
+    color: #f27a1a;
+}
+
+.login-input {
+    width: 100%;
+    padding: 12px 12px 12px 38px;
+    border-radius: 10px;
+    border: 2px solid #f27a1a;
+    background-color: #fefefe;
+    outline: none;
+}
+
+/* Botón */
+.login-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #4b007d;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.login-button:hover {
+    background-color: #f27a1a;
+}
+
+/* Enlace de registro */
+.register-link {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    color: #4b007d;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.register-link:hover {
+    color: #f27a1a;
+}
+
+/* Mensaje de error */
+.login-error {
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
+    text-align: center;
+}
+
+/* Sprite animado y draggable */
+/* Sprite general */
+/* Sprite general */
+.sprite {
+    position: absolute;
+    bottom: 0px;
+    left: 50px;
+    width: 128px;
+    height: 128px;
+    background-position: 0 0;
+    cursor: grab;
+    z-index: 1000;
+    transform: scaleX(1);
+}
+
+
+/* IDLE - 6 frames */
+.sprite.idle {
+    background-image: url('/static/img/Idle.png');
+    background-size: 768px 128px;
+    animation: idleAnim 1s steps(6) infinite;
+}
+
+.sprite.walking {
+    background-image: url('/static/img/Run.png');
+    background-size: 1024px 128px;
+    animation: runAnim 0.8s steps(8) infinite;
+}
+
+.sprite.jumping {
+    background-image: url('/static/img/Jump.png');
+    background-size: 1536px 128px; /* 12 frames */
+    animation: jumpAnim 1.2s steps(12) forwards;
+}
+
+.sprite.attacking {
+    background-image: url('/static/img/Attack_1.png');
+    background-size: 640px 128px; /* 5 frames */
+    animation: attackAnim 0.6s steps(5) forwards;
+}
+
+@keyframes idleAnim {
+    from { background-position: 0 0; }
+    to { background-position: -768px 0; }
+}
+
+@keyframes runAnim {
+    from { background-position: 0 0; }
+    to { background-position: -1024px 0; }
+}
+
+@keyframes jumpAnim {
+    from { background-position: 0 0; }
+    to { background-position: -1536px 0; }
+}
+
+@keyframes attackAnim {
+    from { background-position: 0 0; }
+    to { background-position: -640px 0; }
+}
+
+
+
+/* Responsive */
+@media (max-width: 768px) {
+    .login-wrapper {
+        padding: 30px 20px;
+        max-width: 90%;
+    }
+
+    .login-title {
+        font-size: 22px;
+    }
+
+    .login-subtitle {
+        font-size: 14px;
+    }
+
+    .login-button {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .login-input {
+        padding: 10px 10px 10px 34px;
+    }
+
+    .input-group i {
+        left: 10px;
+    }
+
+    .register-link {
+        font-size: 13px;
+    }
+
+    .login-error {
+        font-size: 13px;
+    }
+}
