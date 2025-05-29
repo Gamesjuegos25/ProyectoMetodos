@@ -286,6 +286,10 @@ def historial():
 
     return render_template('historial.html', username=username, resultados=resultados, metodo=metodo, fecha=fecha)
 
+@app.route('/acerca-de')
+def acerca_de():
+    return render_template('acerca_de.html')
+
 
 # RUTA PARA VER GRÁFICA ALMACENADA
 @app.route('/ver_grafica/<int:id>')
