@@ -45,8 +45,8 @@ def newton_raphsonLogica(funcion_str, x0, max_iter=4000, tol=1e-6, locals_dict=N
             iteraciones.append({
                 
                 'Iteración': i,
-                'x': round(float(x0), 10),        # ✅ clave "x", no "x0"
-                'fx0': round(float(fx0), 10),     # ✅ clave correcta para guardar fX0
+                'x': round(float(x0), 10),       
+                'fx0': round(float(fx0), 10),     
                 'Error': round(float(error), 10)
             })
 

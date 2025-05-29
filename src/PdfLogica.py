@@ -1,17 +1,12 @@
 import pyodbc
 from fpdf import FPDF
-from src.conexion_sqlS import conexiondb  # Función que devuelve la conexión pyodbc
+from src.conexion_sqlS import conexiondb
 from io import BytesIO
 from PIL import Image
 import tempfile
 import os
 
-
 def _fmt(val, prec):
-    """
-    Intenta convertir val a float y formatearlo con 'prec' decimales.
-    Si falla, devuelve cadena vacía.
-    """
     try:
         return f"{float(val):.{prec}f}"
     except (TypeError, ValueError):
@@ -28,39 +23,23 @@ class PDFReport(FPDF):
         self.set_auto_page_break(auto=True, margin=20)
 
     def header(self):
-        # Logo a la derecha en el header, si existe
         if self.logo_path and os.path.exists(self.logo_path):
-            # Colocamos el logo a 15 mm desde el borde derecho y 10 mm desde arriba
             logo_width = 25
             self.image(self.logo_path, x=self.w - self.r_margin - logo_width, y=10, w=logo_width)
 
-        # Título centrado
         self.set_y(10)
         self.set_font("Arial", 'B', 16)
         self.set_text_color(0, 0, 0)
         self.cell(0, 15, "Reporte de Resultados", ln=True, align='C')
-        self.ln(5)  # un pequeño espacio después del título
+        self.ln(5)
 
     def footer(self):
-        # Pie de página con número de página centrado
         self.set_y(-15)
         self.set_font('Arial', 'I', 8)
         self.set_text_color(100, 100, 100)
         self.cell(0, 10, f'Página {self.page_no()}', align='C')
-            
-##comente el add watermark porque da problema el opacity porque FPDF NO soporta ese parametro 
-    '''def add_watermark(self):
-        if self.watermark_path and os.path.exists(self.watermark_path):
-            # Calcular ancho efectivo (ancho total menos márgenes)
-            epw = self.w - self.l_margin - self.r_margin
-            # Ancho de la marca de agua: la mitad del ancho efectivo
-            w_wm = epw * 0.5
-            # Centrar horizontalmente dentro del margen
-            x_wm = self.l_margin + (epw - w_wm) / 2
-            # Centrar verticalmente en la página
-            y_wm = (self.h - w_wm) / 2
-            self.image(self.watermark_path, x=x_wm, y=y_wm, w=w_wm, opacity=0.1)  # si tu fpdf soporta opacity
-'''
+
+
 def Greporte(nombre_usuario=None, resultado_id=None, fecha=None, nombre_metodo=None,
              logo_path='static/img/Logo_mariano.png'):
     conn = conexiondb()
@@ -70,7 +49,7 @@ def Greporte(nombre_usuario=None, resultado_id=None, fecha=None, nombre_metodo=N
         SELECT 
             r.ResultadoId AS ID,
             r.NombreUsuario,
-            m.Nombre    AS Metodo,
+            m.Nombre AS Metodo,
             r.Funcion,
             r.X0,
             r.X1,
@@ -110,11 +89,11 @@ def Greporte(nombre_usuario=None, resultado_id=None, fecha=None, nombre_metodo=N
     if not filas:
         return None
 
-    pdf = PDFReport(logo_path=logo_path)
     fila = filas[0]
+    metodo = fila.Metodo.lower()
 
+    pdf = PDFReport(logo_path=logo_path)
     pdf.add_page()
-  
 
     pdf.set_text_color(0)
     pdf.set_font("Arial", '', 12)
@@ -132,8 +111,16 @@ def Greporte(nombre_usuario=None, resultado_id=None, fecha=None, nombre_metodo=N
 
     pdf.ln(4)
 
-    headers = ["ID", "X0", "X1", "X2", "Resultado", "Iter.", "Error Rel."]
-    widths  = [20, 25, 25, 25, 35, 25, 35]
+    # Definimos columnas dinámicamente
+    if "newton" in metodo:
+        headers = ["ID", "X0", "Resultado", "Iter.", "Error Rel."]
+        widths = [20, 40, 40, 25, 40]
+    elif "secante" in metodo:
+        headers = ["ID", "X0", "X1", "Resultado", "Iter.", "Error Rel."]
+        widths = [15, 25, 25, 35, 25, 35]
+    else:  # Por defecto Muller
+        headers = ["ID", "X0", "X1", "X2", "Resultado", "Iter.", "Error Rel."]
+        widths = [20, 25, 25, 25, 35, 25, 35]
 
     table_width = sum(widths)
     start_x = (pdf.w - table_width) / 2
@@ -147,18 +134,12 @@ def Greporte(nombre_usuario=None, resultado_id=None, fecha=None, nombre_metodo=N
     pdf.ln()
 
     cur2 = conexiondb().cursor()
-    cur2.execute(
-        """
-        SELECT Iteracion AS NumeroIteracion,
-               X0,
-               X1,
-               X2,
-               ErrorRelativo
-          FROM IteracionesDetalle
-         WHERE ResultadoId = ?
-         ORDER BY Iteracion
-        """, (fila.ID,)
-    )
+    cur2.execute("""
+        SELECT Iteracion AS NumeroIteracion, X0, X1, X2, ErrorRelativo
+        FROM IteracionesDetalle
+        WHERE ResultadoId = ?
+        ORDER BY Iteracion
+    """, (fila.ID,))
     detalle = cur2.fetchall()
     cur2.connection.close()
 
@@ -166,36 +147,44 @@ def Greporte(nombre_usuario=None, resultado_id=None, fecha=None, nombre_metodo=N
     pdf.set_font("Arial", '', 9)
 
     if detalle:
-        primera = detalle[0]
-        pdf.set_x(start_x)
-        pdf.cell(widths[0], 6, str(fila.ID), border=1, align='C')
-        pdf.cell(widths[1], 6, _fmt(fila.X0, 6), border=1, align='C')
-        pdf.cell(widths[2], 6, _fmt(fila.X1, 6), border=1, align='C')
-        pdf.cell(widths[3], 6, _fmt(fila.X2, 6), border=1, align='C')
-        pdf.cell(widths[4], 6, _fmt(primera.X2, 8), border=1, align='C')
-        pdf.cell(widths[5], 6, str(primera.NumeroIteracion), border=1, align='C')
-        pdf.cell(widths[6], 6, _fmt(primera.ErrorRelativo, 8), border=1, align='C')
-        pdf.ln()
-
-        for it in detalle[1:]:
+        for i, it in enumerate(detalle):
             pdf.set_x(start_x)
-            pdf.cell(widths[0], 6, "", border=1, align='C')
-            pdf.cell(widths[1], 6, _fmt(it.X0, 6), border=1, align='C')
-            pdf.cell(widths[2], 6, _fmt(it.X1, 6), border=1, align='C')
-            pdf.cell(widths[3], 6, _fmt(it.X2, 6), border=1, align='C')
-            pdf.cell(widths[4], 6, _fmt(it.X2, 8), border=1, align='C')
-            pdf.cell(widths[5], 6, str(it.NumeroIteracion), border=1, align='C')
-            pdf.cell(widths[6], 6, _fmt(it.ErrorRelativo, 8), border=1, align='C')
+            pdf.cell(widths[0], 6, str(fila.ID if i == 0 else ""), border=1, align='C')
+
+            if "newton" in metodo:
+                pdf.cell(widths[1], 6, _fmt(it.X0, 6), border=1, align='C')
+                pdf.cell(widths[2], 6, _fmt(it.X0, 8), border=1, align='C')
+                pdf.cell(widths[3], 6, str(it.NumeroIteracion), border=1, align='C')
+                pdf.cell(widths[4], 6, _fmt(it.ErrorRelativo, 8), border=1, align='C')
+
+            elif "secante" in metodo:
+                pdf.cell(widths[1], 6, _fmt(it.X0, 6), border=1, align='C')
+                pdf.cell(widths[2], 6, _fmt(it.X1, 6), border=1, align='C')
+                pdf.cell(widths[3], 6, _fmt(it.X1, 8), border=1, align='C')
+                pdf.cell(widths[4], 6, str(it.NumeroIteracion), border=1, align='C')
+                pdf.cell(widths[5], 6, _fmt(it.ErrorRelativo, 8), border=1, align='C')
+
+            else:  # Muller
+                pdf.cell(widths[1], 6, _fmt(it.X0, 6), border=1, align='C')
+                pdf.cell(widths[2], 6, _fmt(it.X1, 6), border=1, align='C')
+                pdf.cell(widths[3], 6, _fmt(it.X2, 6), border=1, align='C')
+                pdf.cell(widths[4], 6, _fmt(it.X2, 8), border=1, align='C')
+                pdf.cell(widths[5], 6, str(it.NumeroIteracion), border=1, align='C')
+                pdf.cell(widths[6], 6, _fmt(it.ErrorRelativo, 8), border=1, align='C')
             pdf.ln()
     else:
+        # Fila sin detalle
         pdf.set_x(start_x)
-        pdf.cell(widths[0], 6, str(fila.ID), border=1, align='C')
-        pdf.cell(widths[1], 6, _fmt(fila.X0, 6), border=1, align='C')
-        pdf.cell(widths[2], 6, _fmt(fila.X1, 6), border=1, align='C')
-        pdf.cell(widths[3], 6, _fmt(fila.X2, 6), border=1, align='C')
-        pdf.cell(widths[4], 6, _fmt(fila.Resultado, 8), border=1, align='C')
-        pdf.cell(widths[5], 6, str(fila.Iteraciones), border=1, align='C')
-        pdf.cell(widths[6], 6, _fmt(fila.ErrorRelativo, 8), border=1, align='C')
+        row = [
+            str(fila.ID),
+            _fmt(fila.X0, 6),
+            _fmt(fila.X1 if "secante" in metodo else fila.X2 if "muller" in metodo else fila.Resultado, 6),
+            _fmt(fila.Resultado, 8),
+            str(fila.Iteraciones),
+            _fmt(fila.ErrorRelativo, 8)
+        ]
+        for i in range(len(headers)):
+            pdf.cell(widths[i], 6, row[i] if i < len(row) else "", border=1, align='C')
         pdf.ln()
 
     pdf.ln(6)
