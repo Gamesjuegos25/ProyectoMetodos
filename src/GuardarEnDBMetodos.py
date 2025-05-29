@@ -7,14 +7,8 @@ import sympy as sp
 import numpy as np
 import pyodbc
 import unicodedata
-
-# Mapeo de métodos a IDs según tu tabla en la base de datos
-mapa_metodos = {
-    'newton': 1,       # Newton-Raphson
-    'secante': 2,
-    'gauss': 3,
-    'muller': 4,       # SIN tilde, coincidirá con "Müller" gracias a normalización
-}
+import json
+from Metodos.MetodosLogica import mullerLogica
 
 def normalizar_texto(texto):
     return unicodedata.normalize('NFKD', texto).encode('ASCII', 'ignore').decode('utf-8').lower()
@@ -23,7 +17,6 @@ def crear_grafica(funcion_str, raiz):
     x = sp.symbols('x')
     funcion = sp.sympify(funcion_str)
     f_lambda = sp.lambdify(x, funcion, modules=["numpy"])
-
     x_vals = np.linspace(raiz - 1, raiz + 1, 100)
     y_vals = f_lambda(x_vals)
 
@@ -40,25 +33,37 @@ def crear_grafica(funcion_str, raiz):
     buf.seek(0)
     return buf.read()
 
-def guardar_resultado_metodo(metodo_nombre, usuario, funcion, x0, lista_iteraciones, resultado, error_relativo, grafica_bytes=None, x1=None, x2=None):
+
+
+def guardar_resultado_completo(
+    metodo_nombre, usuario, funcion, x0, lista_iteraciones, resultado, error_relativo,
+    grafica_bytes=None, x1=None, x2=None, max_iteraciones=100
+):
     try:
+        if isinstance(lista_iteraciones, str):
+            lista_iteraciones = json.loads(lista_iteraciones)
+        
+        if max_iteraciones is not None:
+            lista_iteraciones = lista_iteraciones[:max_iteraciones]
+
         iteraciones = len(lista_iteraciones)
         if grafica_bytes is None:
             grafica_bytes = crear_grafica(funcion, resultado)
-
         error_relativo = float(error_relativo)
-
-        metodo_nombre_normalizado = normalizar_texto(metodo_nombre)
-        metodo_id = mapa_metodos.get(metodo_nombre_normalizado)
-        if metodo_id is None:
-            raise ValueError(f"Método desconocido: {metodo_nombre}")
 
         connection = conexiondb()
         cursor = connection.cursor()
+        connection.autocommit = False
+
+        cursor.execute("SELECT MetodoId FROM Metodos WHERE LOWER(Nombre) = ?", (metodo_nombre.lower(),))
+        fila = cursor.fetchone()
+        if not fila:
+            raise ValueError(f"Método '{metodo_nombre}' no encontrado en la base de datos.")
+        metodo_id = fila[0]
 
         cursor.execute("""
             INSERT INTO ResultadosMetodos (
-                MetodoId, NombreUsuario, Funcion, X0, X1, X2, 
+                MetodoId, NombreUsuario, Funcion, X0, X1, X2,
                 Iteraciones, Resultado, ErrorRelativo, Grafica
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
@@ -66,43 +71,81 @@ def guardar_resultado_metodo(metodo_nombre, usuario, funcion, x0, lista_iteracio
             iteraciones, resultado, error_relativo, pyodbc.Binary(grafica_bytes)
         ))
 
-        connection.commit()
         cursor.execute("SELECT @@IDENTITY")
         resultado_id = cursor.fetchone()[0]
 
+        # Insertar la primera iteración con valores iniciales (sin error ni fX)
+        cursor.execute("""
+            INSERT INTO IteracionesDetalle (
+                ResultadoId, Iteracion, ErrorRelativo, X0, X1, X2, fX0, fX1, fX2
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            resultado_id,
+            0,
+            None,
+            x0,
+            x1,
+            x2,
+            None,
+            None,
+            None,
+        ))
+
+        # Insertar las iteraciones calculadas
+        for i, iteracion in enumerate(lista_iteraciones, start=1):
+            if isinstance(iteracion, str):
+                iteracion = json.loads(iteracion)
+            
+            cursor.execute("""
+                INSERT INTO IteracionesDetalle (
+                    ResultadoId, Iteracion, ErrorRelativo, X0, X1, X2, fX0, fX1, fX2
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                resultado_id,
+                i,
+                iteracion.get('Error', 0),
+                iteracion.get('x0', None),
+                iteracion.get('x1', None),
+                iteracion.get('x2', None),
+                iteracion.get('fX0', None),
+                iteracion.get('fX1', None),
+                iteracion.get('fX2', None),
+            ))
+
+        connection.commit()
+        cursor.close()
         connection.close()
         return resultado_id
 
     except Exception as e:
-        print(f"[Guardar Resultado] Error inesperado: {e}")
+        if 'connection' in locals():
+            connection.rollback()
+            connection.close()
+        print(f"[Guardar Resultado Completo] Error inesperado: {e}")
         print(traceback.format_exc())
         return None
 
-def guardar_iteraciones_detalle(resultado_id, lista_iteraciones):
-    try:
-        connection = conexiondb()
-        cursor = connection.cursor()
 
-        # Tomar solo las últimas 4 iteraciones (si hay menos de 4, toma todas)
-        ultimas_iteraciones = lista_iteraciones[-4:]
+# Ejemplo de uso:
+if __name__ == "__main__":
+    funcion_str = "x**3 - 13*x - 12"
+    x0, x1, x2 = 5.0, 6.0, 7.0
+    usuario = "usuario_ejemplo"
 
-        offset = len(lista_iteraciones) - len(ultimas_iteraciones)
-        for i, iteracion in enumerate(ultimas_iteraciones, start=offset + 1):
+    raiz, iteraciones, mensaje = mullerLogica(funcion_str, x0, x1, x2)
 
-            valor = iteracion.get('x') or iteracion.get('x_r') or iteracion.get('x1') or 0
-            error = iteracion.get('Error', 0)
-
-            cursor.execute("""
-                INSERT INTO IteracionesDetalle (
-                    ResultadoId, NumeroIteracion, Valor, ErrorRelativo
-                ) VALUES (?, ?, ?, ?)
-            """, (resultado_id, i, valor, error))
-
-        connection.commit()
-        connection.close()
-        return True
-
-    except Exception as e:
-        print(f"[Guardar Iteraciones] Error: {e}")
-        print(traceback.format_exc())
-        return False
+    if raiz is not None:
+        resultado_id = guardar_resultado_completo(
+            metodo_nombre='Müller',
+            usuario=usuario,
+            funcion=funcion_str,
+            x0=x0,
+            x1=x1,
+            x2=x2,
+            lista_iteraciones=iteraciones,
+            resultado=raiz,
+            error_relativo=iteraciones[-1]['Error'] if iteraciones else 0
+        )
+        print(f"Resultado guardado con ID: {resultado_id}")
+    else:
+        print(f"Error en cálculo: {mensaje}")

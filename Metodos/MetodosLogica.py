@@ -1,6 +1,11 @@
 from sympy import symbols, sympify, lambdify, diff, sin, cos, tan, exp, log, sqrt
+import sympy as sp
 import numpy as np
-import cmath
+from src.conexion_sqlS import conexiondb
+from datetime import datetime
+import matplotlib.pyplot as plt
+
+
 
 # Diccionario seguro de funciones matemáticas
 locals_dict = {'sin': sin, 'cos': cos, 'tan': tan, 'exp': exp, 'log': log, 'sqrt': sqrt}
@@ -97,73 +102,60 @@ def secanteLogica(funcion_str, x0, x1, max_iter=4000, tol=1e-6):
     return None, iteraciones, mensaje
 
 # Método de Müller
-def mullerLogica(funcion_str, x0, x1, x2, max_iter=4000, tol=1e-6):
+def mullerLogica(funcion_str, x0, x1, x2, tol=1e-10, max_iter=50):
+    x = sp.symbols('x')
+    funcion = sp.sympify(funcion_str)
+    f_lambda = sp.lambdify(x, funcion, modules=["numpy"])
+
     iteraciones = []
-    mensaje = None
-
     try:
-        x = symbols('x')
-        funcion_str = funcion_str.replace('^', '**')
-        funcion = sympify(funcion_str, locals=locals_dict)
-        f = lambdify(x, funcion, modules=["numpy", "sympy"])
-    except Exception as e:
-        mensaje = f"Error al interpretar la función: {e}"
-        return None, [], mensaje
+        for i in range(1, max_iter + 1):
+            f0 = f_lambda(x0)
+            f1 = f_lambda(x1)
+            f2 = f_lambda(x2)
 
-    for i in range(1, max_iter + 1):
-        try:
-            f0, f1, f2 = f(x0), f(x1), f(x2)
             h0 = x1 - x0
             h1 = x2 - x1
-            d0 = (f1 - f0) / h0
-            d1 = (f2 - f1) / h1
-            a = (d1 - d0) / (h1 + h0)
-
-            if abs(a) < 1e-12:
-                mensaje = f"Coeficiente cuadrático a ≈ 0 en iteración {i}, posible división por cero."
-                return None, iteraciones, mensaje
-
-            b = a * h1 + d1
+            delta0 = (f1 - f0) / h0
+            delta1 = (f2 - f1) / h1
+            a = (delta1 - delta0) / (h1 + h0)
+            b = a * h1 + delta1
             c = f2
-            discriminante = b**2 - 4 * a * c
-            sqrt_disc = cmath.sqrt(complex(discriminante))
-            den1, den2 = b + sqrt_disc, b - sqrt_disc
-            den = den1 if abs(den1) > abs(den2) else den2
 
-            if abs(den) < 1e-12:
-                mensaje = f"Denominador ≈ 0 en iteración {i}, división inválida."
-                return None, iteraciones, mensaje
+            rad = np.lib.scimath.sqrt(b ** 2 - 4 * a * c)
 
-            x_r = x2 - (2 * c) / den
+            if abs(b + rad) > abs(b - rad):
+                den = b + rad
+            else:
+                den = b - rad
 
-            if abs(x_r.imag) > 1e-6:
-                mensaje = f"Raíz compleja detectada en iteración {i}. Método se detiene."
-                return None, iteraciones, mensaje
+            if den == 0:
+                # Evitar división por cero
+                return None, iteraciones, "Denominador cero en cálculo."
 
-            x_r = x_r.real
-            error = abs((x_r - x2) / x_r) if x_r != 0 else abs(x_r - x2)
+            dx_r = -2 * c / den
+            x_r = x2 + dx_r
+            error = abs(dx_r / x_r) if x_r != 0 else abs(dx_r)
 
             iteraciones.append({
                 'Iteración': i,
                 'x0': round(float(x0), 10),
                 'x1': round(float(x1), 10),
                 'x2': round(float(x2), 10),
-                'f(x2)': round(float(f2), 10),
-                'x_r': round(float(x_r), 10),
+                'fX0': round(float(f0), 10),
+                'fX1': round(float(f1), 10),
+                'fX2': round(float(f2), 10),
                 'Error': round(float(error), 10)
             })
 
             if error < tol:
-                return round(float(x_r), 15), iteraciones, None
+                return x_r, iteraciones, "Convergencia alcanzada"
 
             x0, x1, x2 = x1, x2, x_r
-        except Exception as e:
-            mensaje = f"Error durante iteración {i}: {e}"
-            return None, iteraciones, mensaje
 
-    mensaje = "Advertencia: se alcanzó el máximo de iteraciones sin converger."
-    return None, iteraciones, mensaje
-
+        return x_r, iteraciones, "Máximo de iteraciones alcanzado sin convergencia"
+    except Exception as e:
+        return None, iteraciones, f"Error en cálculo: {str(e)}"
 # Método de Gauss-Jordan
 def gauss_jordan_logica(matriz_aumentada):
     matriz = matriz_aumentada.astype(float)

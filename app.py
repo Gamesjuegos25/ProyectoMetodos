@@ -4,11 +4,12 @@ from functools import wraps
 from flask import Flask, render_template, request, redirect, url_for, session, send_file
 from io import BytesIO
 
+from flask import jsonify
 # Importación de funciones y conexiones propias
 from Metodos.GaussJordan import gauss_jordan_logica, parse_matriz
 from src.conexion_sqlS import conexiondb
 from Metodos.MetodosLogica import newton_raphsonLogica, secanteLogica, mullerLogica, gauss_jordan_logica
-from src.GuardarEnDBMetodos import guardar_resultado_metodo
+from src.GuardarEnDBMetodos import guardar_resultado_completo
 from src.HistorialLogica import obtener_historial_usuario
 from werkzeug.security import generate_password_hash, check_password_hash
 from src.PdfLogica import Greporte  # Función para generar PDF
@@ -72,14 +73,29 @@ def registrar():
             if connection:
                 try:
                     cursor = connection.cursor()
+
+                    # Verificar si usuario ya existe
+
                     cursor.execute("SELECT * FROM Usuarios WHERE NombreUsuario = ?", (username,))
                     existing_user = cursor.fetchone()
 
                     if existing_user:
                         error = 'El usuario ya existe.'
                     else:
+
+                        # Generar hash de contraseña
                         hashed_password = generate_password_hash(password)
-                        cursor.execute("INSERT INTO Usuarios (NombreUsuario, Contrasena) VALUES (?, ?)", (username, hashed_password))
+
+                        # Recortar prefijo scrypt: si existe
+                        if hashed_password.startswith("scrypt:"):
+                            hashed_password = hashed_password[len("scrypt:"):]
+
+                        # Insertar nuevo usuario con hash sin prefijo
+                        cursor.execute(
+                            "INSERT INTO Usuarios (NombreUsuario, Contrasena) VALUES (?, ?)",
+                            (username, hashed_password)
+                        )
+
                         connection.commit()
                         return redirect(url_for('login'))
                 except Exception as e:
@@ -146,6 +162,22 @@ def gauss_jordan():
     resultado = None
 
     if request.method == 'POST':
+        if request.is_json:
+            data = request.get_json()
+            matriz_texto = data.get('matriz', '')
+            matriz = parse_matriz(matriz_texto)
+
+            if matriz is None or matriz.shape[0] == 0:
+                return jsonify({'error': 'Formato de matriz inválido.'})
+
+            soluciones, mensaje = gauss_jordan_logica(matriz)
+            if mensaje:
+                return jsonify({'error': mensaje})
+            else:
+                return jsonify({'soluciones': soluciones.tolist()})
+        
+        # Si es POST pero no JSON (por formulario clásico)
+
         accion = request.form.get('accion')
         matriz_texto = request.form.get('matriz', '')
 
@@ -161,8 +193,8 @@ def gauss_jordan():
                     resultado = soluciones.tolist()
 
         elif accion == 'guardar':
-            # Aquí debes implementar guardar en BD si quieres
-            # Por ahora lo dejamos simulado
+
+
             return redirect(url_for('gauss_jordan'))
 
     return render_template('gauss_jordan.html',
@@ -201,11 +233,11 @@ def metodo_generico(nombre_metodo, campos=None):
 
                 # Guardar según método
                 if nombre_metodo == 'Newton':
-                    exito = guardar_resultado_metodo(nombre_metodo, usuario, funcion, valores[0], datos_json, resultado_guardar, error_relativo)
+                    exito = guardar_resultado_completo(nombre_metodo, usuario, funcion, valores[0], datos_json, resultado_guardar, error_relativo)
                 elif nombre_metodo == 'Secante':
-                    exito = guardar_resultado_metodo(nombre_metodo, usuario, funcion, valores[0], datos_json, resultado_guardar, error_relativo, x1=valores[1])
+                    exito = guardar_resultado_completo(nombre_metodo, usuario, funcion, valores[0], datos_json, resultado_guardar, error_relativo, x1=valores[1])
                 elif nombre_metodo == 'Müller':
-                    exito = guardar_resultado_metodo(nombre_metodo, usuario, funcion, valores[0], datos_json, resultado_guardar, error_relativo, x1=valores[1], x2=valores[2])
+                    exito = guardar_resultado_completo(nombre_metodo, usuario, funcion, valores[0], datos_json, resultado_guardar, error_relativo, x1=valores[1], x2=valores[2])
                 else:
                     exito = False
 

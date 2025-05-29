@@ -4,35 +4,6 @@
     <meta charset="UTF-8" />
     <title>Gauss-Jordan Solver</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='gauss.css') }}">
-    <style>
-        textarea {
-            width: 300px;
-            height: 150px;
-            font-family: monospace;
-            white-space: pre-wrap;
-        }
-        #resultado {
-            margin-top: 15px;
-            font-weight: bold;
-            color: #4b007d;
-        }
-        p.instrucciones {
-            max-width: 600px;
-            background: #f9f0ff;
-            padding: 15px;
-            border-radius: 12px;
-            border: 2px solid #4b007d;
-            color: #32004b;
-            font-size: 16px;
-            margin-bottom: 15px;
-        }
-        p.instrucciones code {
-            background: #e6d1ff;
-            padding: 2px 6px;
-            border-radius: 5px;
-            font-family: monospace;
-        }
-    </style>
 </head>
 <body class="metodo-body">
     <div class="metodo-container">
@@ -60,6 +31,14 @@
         <button class="btn-guardar" onclick="enviarMatriz()">Calcular solución</button>
 
         <div id="resultado"></div>
+        <div class="btn-group">
+            <a href="{{ url_for('home') }}">
+                <button type="button" class="btn volver">
+                    <span></span><span></span><span></span><span></span>
+                    Volver al menú
+                </button>
+            </a>
+        </div>
     </div>
 
     <script>
@@ -74,7 +53,7 @@
             resDiv.textContent = "Procesando...";
 
             try {
-                const response = await fetch('/resolver', {
+                const response = await fetch('/metodo/gauss_jordan', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({matriz: texto})
@@ -85,7 +64,11 @@
                 if (data.error) {
                     resDiv.textContent = "Error: " + data.error;
                 } else {
-                    resDiv.textContent = "Solución: " + data.soluciones.join(", ");
+                    const variables = ['x', 'y', 'z'];
+                    let resultadoTexto = data.soluciones
+                        .map((val, i) => `${variables[i]} = ${val}`)
+                        .join("\n");
+                    resDiv.innerText = "Solución:\n" + resultadoTexto;
                 }
             } catch (err) {
                 resDiv.textContent = "Error en la conexión con el servidor.";
