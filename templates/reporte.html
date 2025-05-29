@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte de Resultados</title>
+    <link rel="stylesheet" href="reporte.css">
+</head>
+<body>
+    <div class="marca-agua"></div>
+
+    <div class="contenedor">
+        <header>
+            <img src="logo.png" class="logo" alt="Logo">
+            <h1>Reporte de Resultados</h1>
+        </header>
+
+        <section class="info-usuario">
+            <p><strong>👤 Usuario:</strong> {{usuario}}</p>
+            <p><strong>⚙️ Método:</strong> {{metodo}}</p>
+            <p><strong>📅 Fecha:</strong> {{fecha}}</p>
+        </section>
+
+        <section class="tabla-principal">
+            <h2>Resultado</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>X₀</th>
+                        <th>X₁</th>
+                        <th>X₂</th>
+                        <th>Función</th>
+                        <th>Tolerancia</th>
+                        <th>Iteraciones</th>
+                        <th>Resultado</th>
+                        <th>Error</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{filas_tabla}}
+                </tbody>
+            </table>
+        </section>
+
+        <section class="grafica">
+            <h2>Gráfica</h2>
+            <img src="{{grafica_path}}" alt="Gráfica del método">
+        </section>
+    </div>
+</body>
+</html>

@@ -1,112 +1,111 @@
-/* gauss.css */
 
-/* Reset básico */
-* {
+/* Fondo y tipografía */
+body.metodo-body {
     margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-/* Fondo y fuente general */
-body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f4f7f8;
-    color: #333;
-    line-height: 1.6;
-    padding: 20px;
+    background: 
+        linear-gradient(to right, #4b007d88, #f27a1a88),
+        url('/static/img/background.jpeg') no-repeat center center fixed;
+    background-size: cover;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #32004b;
 }
 
 /* Contenedor principal */
-.container {
-    max-width: 900px;
-    margin: 0 auto;
-    background-color: #fff;
-    padding: 25px 40px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+.metodo-container {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 40px 30px;
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.25);
+    width: 90%;
+    max-width: 600px;
+    text-align: center;
+}
+.metodo-container button {
+    margin-top: 20px;
+    padding: 12px 20px;
+    color: #fff;
+    background-color: #4b007d;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
 }
 
-/* Título */
-h1, h2, h3 {
-    color: #004d99;
+/* Título principal */
+.metodo-container h1 {
+    color: #4b007d;
+    font-size: 28px;
     margin-bottom: 20px;
 }
 
-/* Formularios */
-form {
-    margin-top: 20px;
+/* Instrucciones */
+.instrucciones {
+    font-size: 14px;
+    color: #555;
+    text-align: left;
+    background-color: #fff7fd;
+    border-left: 4px solid #f27a1a;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
 }
 
-input[type="number"], input[type="text"], textarea {
+/* Textarea */
+#matrizInput {
     width: 100%;
-    padding: 10px 15px;
+    height: 120px;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-family: monospace;
+    font-size: 14px;
+    resize: vertical;
     margin-bottom: 15px;
-    border: 1.5px solid #ccc;
-    border-radius: 6px;
-    font-size: 16px;
-    transition: border-color 0.3s ease;
+    box-sizing: border-box;
 }
 
-input[type="number"]:focus, input[type="text"]:focus, textarea:focus {
-    border-color: #004d99;
-    outline: none;
-}
-
-/* Botones */
-button {
-    background-color: #007acc;
+/* Botón de calcular */
+.btn-guardar {
+    background-color: #4b007d;
     color: white;
     border: none;
-    padding: 12px 28px;
-    border-radius: 6px;
+    padding: 12px 20px;
+    border-radius: 10px;
     font-size: 16px;
+    font-weight: bold;
+
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
-button:hover {
-    background-color: #005f99;
+.btn-guardar:hover {
+    background-color: #f27a1a;
 }
 
-/* Tabla de resultados */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 25px;
+/* Resultado */
+#resultado {
+    margin-top: 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #32004b;
 }
 
-th, td {
-    border: 1px solid #ddd;
-    padding: 10px 12px;
-    text-align: center;
-}
-
-th {
-    background-color: #007acc;
-    color: white;
-}
-
-tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-/* Mensajes de error o info */
-.alert {
-    background-color: #ffe6e6;
-    border: 1px solid #ff4d4d;
-    color: #b30000;
-    padding: 10px 15px;
-    border-radius: 6px;
-    margin-bottom: 20px;
-}
-
-/* Responsivo */
+/* Responsividad */
 @media (max-width: 600px) {
-    .container {
-        padding: 20px;
+    .metodo-container {
+        padding: 25px 20px;
     }
 
-    button {
+    .metodo-container h1 {
+        font-size: 22px;
+    }
+
+    .btn-guardar {
         width: 100%;
     }
 }
