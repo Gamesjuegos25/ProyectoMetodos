@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>Menú Principal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='menu.css') }}">
+
+</head>
+<body>
+    <h1>Seleccione un método</h1>
+
+    <div class="menu-buttons">
+        <a href="{{ url_for('metodo_newton') }}">
+            <button class="btn">
+                <span></span><span></span><span></span><span></span>
+                Newton-Raphson
+            </button>
+        </a>
+
+        <a href="{{ url_for('metodo_secante') }}">
+            <button class="btn">
+                <span></span><span></span><span></span><span></span>
+                Secante
+            </button>
+        </a>
+
+        <a href="{{ url_for('metodo_muller') }}">
+            <button class="btn">
+                <span></span><span></span><span></span><span></span>
+                Müller
+            </button>
+        </a>
+        <a href="{{ url_for('Gauss) }}">
+            <button class="btn">
+                <span></span><span></span><span></span><span></span>
+                Gauss-Jordan
+            </button>
+        </a>
+    </div>
+</body>
+</html>

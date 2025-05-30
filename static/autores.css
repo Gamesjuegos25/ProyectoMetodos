@@ -1,0 +1,195 @@
+/* Fondo y tipografía */
+body.home-body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: 
+        linear-gradient(to right, #4b007d88, #f27a1a88),
+        url('/static/img/background.jpeg') no-repeat center center fixed;
+    background-size: cover;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    color: #32004b;
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: rgba(255, 255, 255, 0.85);
+    padding: 10px 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-logo {
+    font-size: 24px;
+}
+
+.navbar-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #4b007d;
+}
+
+.navbar-menu {
+    list-style: none;
+    display: flex;
+    gap: 15px;
+    padding: 0;
+    margin: 0;
+}
+
+.navbar-menu li a {
+    text-decoration: none;
+    color: white;
+    background-color: #4b007d;
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.navbar-menu li a:hover {
+    background-color: #f27a1a;
+}
+
+/* Contenido principal */
+.home-main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.home-welcome {
+    background-color: rgba(255, 255, 255, 0.85);
+    padding: 40px 30px;
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.25);
+    text-align: center;
+    width: 100%;
+    max-width: 1100px; /* Aumentado */
+}
+
+/* Tabla de autores */
+.autor-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.25);
+}
+
+.autor-table th, .autor-table td {
+    padding: 15px 20px;
+    text-align: center;
+    border-bottom: 1px solid #ccc;
+    vertical-align: middle;
+}
+
+.autor-table th {
+    background-color: #4b007d;
+    color: white;
+    font-weight: bold;
+}
+
+.autor-table td:nth-child(3) {
+    min-width: 160px;
+    white-space: nowrap;
+}
+
+.autor-table img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* Responsive */
+.hamburger {
+    display: none;
+    font-size: 26px;
+    background: none;
+    border: none;
+    color: #4b007d;
+    cursor: pointer;
+}
+.navbar-logo-img {
+    height: 80px;
+    width: auto;
+    object-fit: contain;
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .hamburger {
+        display: block;
+        margin-top: 10px;
+    }
+
+    .navbar-menu {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        margin-top: 10px;
+        gap: 10px;
+    }
+
+    .navbar-menu.show {
+        display: flex;
+    }
+
+    .navbar-menu li a {
+        width: 100%;
+        text-align: left;
+        padding: 10px 15px;
+        background-color: transparent;
+        color: #4b007d;
+        font-weight: bold;
+        border-radius: 0;
+    }
+
+    .navbar-menu li a:hover {
+        background-color: #f2f2f2;
+    }
+
+    .home-welcome {
+        padding: 30px 20px;
+        max-width: 95%;
+    }
+
+    .autor-table, .autor-table thead, .autor-table tbody, .autor-table th, .autor-table td, .autor-table tr {
+        display: block;
+    }
+
+    .autor-table thead {
+        display: none;
+    }
+
+    .autor-table td {
+        position: relative;
+        padding-left: 50%;
+        text-align: left;
+    }
+
+    .autor-table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 15px;
+        top: 15px;
+        font-weight: bold;
+        color: #4b007d;
+    }
+
+    .autor-table img {
+        margin: 10px auto;
+    }
+}

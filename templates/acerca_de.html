@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Información del Proyecto</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='acerca_de.css') }}">
+</head>
+<body class="home-body">
+
+  <!-- Header/Navbar -->
+  <header class="navbar">
+    <div class="navbar-logo">
+            <img src="{{ url_for('static', filename='img/Logo_mariano.png') }}" alt="Logo" class="navbar-logo-img">
+        </div>
+    <div class="navbar-title">Acerca del Proyecto</div>
+    <ul class="navbar-menu">
+      <li><a href="{{ url_for('home') }}"> Menú Principal</a></li>
+      <li><a href="{{ url_for('logout') }}"> Salir</a></li>
+    </ul>
+    <button class="hamburger" onclick="toggleMenu()">☰</button>
+  </header>
+
+  <!-- Contenido principal -->
+  <main class="home-main">
+    <div class="home-welcome">
+      <h2>Información del Proyecto</h2>
+
+      <p><strong>Tipo de Proyecto:</strong> Aplicación Web Educativa</p>
+      <p><strong>Lenguaje de Programación:</strong> Python</p>
+      <p><strong>Base de Datos:</strong> SQL Server</p>
+
+      <p><strong>Librerías Utilizadas:</strong></p>
+            <div class="librerias-lista">
+            <span>Flask</span>
+            <span>Jinja2</span>
+            <span>Werkzeug</span>
+            <span>click</span>
+            <span>numpy</span>
+            <span>matplotlib</span>
+            <span>sympy</span>
+            <span>weasyprint</span>
+            <span>fpdf2</span>
+            <span>pyodbc</span>
+            </div>
+
+      <p><strong>IDE Utilizado:</strong> Visual Studio Code (VS Code)</p>
+    </div>
+  </main>
+
+ 
+  <script>
+    function toggleMenu() {
+      const menu = document.querySelector('.navbar-menu');
+      menu.classList.toggle('show');
+    }
+  </script>
+</body>
+</html>

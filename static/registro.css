@@ -1,0 +1,112 @@
+/* Reset y fuente base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Fondo con imagen y degradado */
+body.register-body {
+    background: 
+        linear-gradient(to right, #4b007d88, #f27a1a88),
+        url('/static/img/background.jpeg') no-repeat center center fixed;
+    background-size: cover;
+    height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    color: #32004b;
+}
+
+/* Contenedor blanco con sombra y bordes redondeados */
+.container {
+    background-color: rgba(255, 255, 255, 0.85);
+    padding: 40px 30px;
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.25);
+    text-align: center;
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Encabezado */
+h1 {
+    font-size: 28px;
+    color: #4b007d;
+    margin-bottom: 10px;
+}
+
+p {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 25px;
+}
+
+/* Grupos de entrada */
+.input-group {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px;
+    padding-left: 12px;
+    border-radius: 10px;
+    border: 2px solid #f27a1a;
+    background-color: #fefefe;
+    outline: none;
+}
+
+/* Botón */
+button {
+    width: 100%;
+    padding: 12px;
+    background-color: #4b007d;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #f27a1a;
+}
+.logeo-link {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    color: #4b007d;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+@media (max-width: 768px) {
+    .container {
+        padding: 30px 20px;
+        max-width: 90%;
+    }
+
+    h1 {
+        font-size: 22px;
+    }
+
+    p {
+        font-size: 14px;
+    }
+
+    button {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .input-group input {
+        padding: 10px;
+    }
+}

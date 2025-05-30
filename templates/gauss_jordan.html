@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>Gauss-Jordan Solver</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='gauss.css') }}">
+</head>
+<body class="metodo-body">
+    <div class="metodo-container">
+        <h1>Solucionador Gauss-Jordan</h1>
+
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+
+        <form method="POST">
+            <p class="instrucciones">
+                Ingresa la matriz aumentada de tu sistema de ecuaciones.<br>
+                Cada fila debe ir en una línea nueva.<br>
+                Separa cada número (coeficientes y término independiente) con un espacio.<br>
+                Por ejemplo:<br><br>
+                <code>2x + 1y - 1z = 8</code><br>
+                <code>-3x - 1y + 2z = -11</code><br>
+                <code>-2x + 1y + 2z = -3</code><br><br>
+                Debes escribir:<br>
+                <code>2 1 -1 8</code><br>
+                <code>-3 -1 2 -11</code><br>
+                <code>-2 1 2 -3</code>
+            </p>
+
+            <textarea name="matriz" id="matrizInput" rows="6" cols="50" required>{{ request.form.get('matriz', '') }}</textarea>
+            <br><br>
+
+            <button type="submit" name="accion" value="calcular" class="btn-guardar">
+                Calcular solución
+            </button>
+        </form>
+
+        {% if soluciones is not none and soluciones|length > 0 %}
+    <div id="resultado">
+        <strong>Solución:</strong><br>
+        {% for val in soluciones %}
+            {{ ['x', 'y', 'z'][loop.index0] }} = {{ val }}<br>
+        {% endfor %}
+    </div>
+
+    <!-- Formulario para guardar resultado -->
+    <form method="POST">
+        <input type="hidden" name="matriz" value="{{ request.form.get('matriz', '') }}">
+        {% for val in soluciones %}
+            <input type="hidden" name="soluciones" value="{{ val }}">
+        {% endfor %}
+        <button type="submit" name="accion" value="guardar" class="btn-guardar">Guardar resultado</button>
+    </form>
+{% endif %}
+
+        <div class="btn-group">
+            <a href="{{ url_for('home') }}">
+                <button type="button" class="btn volver">
+                    <span></span><span></span><span></span><span></span>
+                    Volver al menú
+                </button>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

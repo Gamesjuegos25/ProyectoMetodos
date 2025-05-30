@@ -1,0 +1,178 @@
+/* Fondo y tipografía */
+body.home-body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: 
+        linear-gradient(to left, #f27a1a88, #4b007d88), 
+        url('/static/img/background2.jpeg') no-repeat center center fixed; 
+    background-size: cover;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    color: #4b007d; 
+}
+
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: rgba(255, 255, 255, 0.9); 
+    padding: 10px 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.navbar-logo {
+    font-size: 24px;
+}
+
+.navbar-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-left: 200px;
+    color: #4b007d;
+}
+
+.navbar-menu {
+    list-style: none;
+    display: flex;
+    gap: 15px;
+    padding: 0;
+    margin: 0;
+}
+
+.navbar-menu li a {
+    text-decoration: none;
+    color: white;
+    background-color: #4b007d;
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.navbar-menu li a:hover {
+    background-color: #f27a1a;
+}
+
+/* Botón hamburguesa para móvil */
+.hamburger {
+    display: none;
+    font-size: 26px;
+    background: none;
+    border: none;
+    color: #4b007d;
+    cursor: pointer;
+}
+
+/* Contenido principal */
+.home-main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Centrado vertical */
+    padding: 20px;
+    overflow-y: auto;
+    position: relative;
+}
+
+/* Caja principal de bienvenida/autores */
+.home-welcome {
+    background-color: rgba(255, 255, 255, 0.95); /* más blanco y opaco */
+    padding: 40px 30px;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 100%;
+    max-width: 700px;
+    animation: fadeIn 1s ease-in-out;
+
+    /* Levanta un poco el cuadro */
+    transform: translateY(-10%);
+}
+
+/* Cada autor */
+.autor {
+    margin-bottom: 30px;
+    padding: 20px;
+    border-top: 2px solid #ccc;
+}
+
+/* Imagen autor */
+.autor img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+}
+.navbar-logo-img {
+    height: 80px;
+    width: auto;
+    object-fit: contain;
+}
+
+/* Animación suave igual que en acerca */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .hamburger {
+        display: block;
+        margin-top: 10px;
+    }
+
+    .navbar-menu {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        margin-top: 10px;
+        gap: 10px;
+    }
+
+    .navbar-menu.show {
+        display: flex;
+    }
+
+    .navbar-menu li a {
+        width: 100%;
+        text-align: center;
+        padding: 10px 0;
+        background-color: #4b007d;
+        color: white;
+        border-radius: 10px;
+    }
+
+    .navbar-menu li a:hover {
+        background-color: #f27a1a;
+    }
+
+    .home-welcome {
+        padding: 30px 20px;
+        max-width: 95%;
+
+        /* Mantener también el levante en móvil */
+        transform: translateY(-10%);
+    }
+
+    #matriz::placeholder {
+    font-size: 18px; /* o el tamaño que prefieras */
+    font-family: monospace; /* para que mantenga la fuente tipo código */
+    color: #888; /* opcional, para que se vea bien el placeholder */
+    line-height: 1.4; /* opcional, para mejor lectura */
+}
+
+
+
+}
+

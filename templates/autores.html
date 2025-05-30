@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Autores</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='autores.css') }}">
+</head>
+<body class="home-body">
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-logo">
+            <img src="{{ url_for('static', filename='img/Logo_mariano.png') }}" alt="Logo" class="navbar-logo-img">
+        </div>
+        <button class="hamburger" onclick="document.querySelector('.navbar-menu').classList.toggle('show')">☰</button>
+        <ul class="navbar-menu">
+            <li><a href="{{ url_for('home') }}">Inicio</a></li>
+            <li><a href="{{ url_for('autores') }}">Autores</a></li>
+            <li><a href="{{ url_for('logout') }}">Cerrar sesión</a></li>
+        </ul>
+    </nav>
+
+    <!-- Contenido principal -->
+    <main class="home-main">
+        <div class="home-welcome">
+            <h2>Autores del Proyecto</h2>
+            <table class="autor-table">
+                <thead>
+                    <tr>
+                        <th>Foto</th>
+                        <th>Nombre</th>
+                        <th>Carnet</th>
+                        <th>Aporte</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td data-label="Foto">
+                            <img src="{{ url_for('static', filename='img/Michaell.jpg') }}" alt="Autor 1">
+                        </td>
+                        <td data-label="Nombre">Micahell Rosdman Reyes Martíne</td>
+                        <td data-label="Carnet">1790-23-218</td>
+                        <td data-label="Aporte">Diseño del frontend, integración visual, experiencia de usuario, aportes significativos del Backend.</td>
+                    </tr>
+                    <tr>
+                        <td data-label="Foto">
+                            <img src="{{ url_for('static', filename='img/cristina.jpg') }}" alt="Autor 2">
+                        </td>
+                        <td data-label="Nombre">María Cristina Maldonado León</td>
+                        <td data-label="Carnet">1790-23-24987</td>
+                        <td data-label="Aporte">Desarrollo del backend, lógica de métodos numéricos y conexión con la base de datos.</td>
+                    </tr>
+                    <tr>
+                        <td data-label="Foto">
+                            <img src="{{ url_for('static', filename='img/anibal.jpg') }}" alt="Autor 3">
+                        </td>
+                        <td data-label="Nombre">Vielman Anibal Vásquez Ramos</td>
+                        <td data-label="Carnet">1790-23-1783</td>
+                        <td data-label="Aporte">Encargado de la documentación e investigación del reporte.</td>
+                    </tr>
+                    <tr>
+                        <td data-label="Foto">
+                            <img src="{{ url_for('static', filename='img/ochoa.jpg') }}" alt="Autor 4">
+                        </td>
+                        <td data-label="Nombre">Gabriel Omar Ochoa Hernández</td>
+                        <td data-label="Carnet">1790-23-4390</td>
+                        <td data-label="Aporte">Lógica de la gráfica y asistente del reporte.</td>
+                    </tr>
+                    <tr>
+                        <td data-label="Foto">
+                            <img src="{{ url_for('static', filename='img/foto.png') }}" alt="Autor 5">
+                        </td>
+                        <td data-label="Nombre">Roni Rolando Rivera Vásquez</td>
+                        <td data-label="Carnet">1790-23-15828</td>
+                        <td data-label="Aporte">Asistente de la lógica de la gráfica y reporte.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+</body>
+</html>

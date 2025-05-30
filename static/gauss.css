@@ -1,0 +1,111 @@
+
+/* Fondo y tipografía */
+body.metodo-body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: 
+        linear-gradient(to right, #4b007d88, #f27a1a88),
+        url('/static/img/background.jpeg') no-repeat center center fixed;
+    background-size: cover;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #32004b;
+}
+
+/* Contenedor principal */
+.metodo-container {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 40px 30px;
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.25);
+    width: 90%;
+    max-width: 600px;
+    text-align: center;
+}
+.metodo-container button {
+    margin-top: 20px;
+    padding: 12px 20px;
+    color: #fff;
+    background-color: #4b007d;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+/* Título principal */
+.metodo-container h1 {
+    color: #4b007d;
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+/* Instrucciones */
+.instrucciones {
+    font-size: 14px;
+    color: #555;
+    text-align: left;
+    background-color: #fff7fd;
+    border-left: 4px solid #f27a1a;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+}
+
+/* Textarea */
+#matrizInput {
+    width: 100%;
+    height: 120px;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-family: monospace;
+    font-size: 14px;
+    resize: vertical;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+}
+
+/* Botón de calcular */
+.btn-guardar {
+    background-color: #4b007d;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-guardar:hover {
+    background-color: #f27a1a;
+}
+
+/* Resultado */
+#resultado {
+    margin-top: 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #32004b;
+}
+
+/* Responsividad */
+@media (max-width: 600px) {
+    .metodo-container {
+        padding: 25px 20px;
+    }
+
+    .metodo-container h1 {
+        font-size: 22px;
+    }
+
+    .btn-guardar {
+        width: 100%;
+    }
+}

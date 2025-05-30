@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body class="home-body">
+    <nav class="navbar">
+        <div class="navbar-logo">
+            <img src="{{ url_for('static', filename='img/Logo_mariano.png') }}" alt="Logo" class="navbar-logo-img">
+        </div>
+
+        <div class="navbar-title">Métodos Numéricos</div>
+        <!-- Botón hamburguesa -->
+        <button class="hamburger" onclick="toggleMenu()">☰</button>
+
+        <!-- Menú con ID -->
+        <ul class="navbar-menu" id="navbarMenu">
+            <li><a href="{{ url_for('autores') }}">Autores</a></li>
+     <li><a href="{{ url_for('metodo_newton') }}">Newton Raphson</a></li>
+    <li><a href="{{ url_for('metodo_secante') }}">Secante</a></li>
+    <li><a href="{{ url_for('metodo_muller') }}">Müller</a></li>
+    <li><a href="{{ url_for('gauss_jordan') }}">Gauss jordan</a></li>
+    <li><a href="{{ url_for('acerca_de') }}">Acerca De</a></li>
+    <li><a href="{{ url_for('historial') }}">Historial</a></li>
+    <li><a href="{{ url_for('logout') }}">Salir</a></li>
+        </ul>
+    </nav>
+
+    <main class="home-main">
+        <section class="home-welcome">
+            <h2>Bienvenido, {{ username }}!</h2>
+            <p>Selecciona una opción del menú para comenzar.</p>
+        </section>
+    </main>
+
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('navbarMenu');
+            menu.classList.toggle('show');
+        }
+    </script>
+</body>
+</html>
